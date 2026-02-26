@@ -1,0 +1,70 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  taxNo     String   @unique
+  sector    String
+  role      String
+  email     String   @unique
+  password  String
+  balance   Float    @default(0.0)
+  
+  status    String   @default("ONAY_BEKLIYOR")
+  tier      String   @default("STANDART")
+  isAdmin   Boolean  @default(false)
+  
+  // YENİ EKLENEN PROFİL ALANLARI
+  iban      String?
+  phone     String?
+  
+  createdAt DateTime @default(now())
+
+  demands     Demand[]    @relation("DemandCreator")
+  mediations  Mediation[] @relation("Mediator")
+  sales       Mediation[] @relation("Seller")
+}
+
+model Demand {
+  id        String   @id @default(cuid())
+  title     String
+  amount    String
+  sector    String
+  status    String   @default("ACIK")
+  creatorId String
+  creator   User     @relation("DemandCreator", fields: [creatorId], references: [id])
+  createdAt DateTime @default(now())
+  mediations Mediation[]
+}
+
+model Mediation {
+  id               String   @id @default(cuid())
+  demandId         String
+  demand           Demand   @relation(fields: [demandId], references: [id])
+  mediatorId       String
+  mediator         User     @relation("Mediator", fields: [mediatorId], references: [id])
+  sellerId         String
+  seller           User     @relation("Seller", fields: [sellerId], references: [id])
+  status           String   @default("BEKLEMEDE")
+  commissionAmount Float    @default(0.0)
+  createdAt        DateTime @default(now())
+}
+
+model LogisticsRoute {
+  id           String   @id @default(cuid())
+  origin       String
+  destination  String
+  vehicleType  String
+  capacity     String
+  targetPrice  Float?
+  status       String   @default("AKTIF")
+  createdAt    DateTime @default(now())
+}
