@@ -69,7 +69,26 @@ export default function AdminDashboard() {
     setLoading(false);
   };
 
-  if (!adminUser) return <div className="min-h-screen flex items-center justify-center font-bold text-[#1B365D]">Yönetici Yetkisi Bekleniyor...</div>;
+  if (!adminUser) return <div className="min-h-screen flex items-center justify-center font-bold text-[#1B365D]">Yönetici Yetkisi Bekleniyor...
+        {/* Robotik Olay Akışı */}
+        <div className="mt-8 bg-[#f8f9fa] p-4 rounded-xl border border-blue-100">
+          <h4 className="text-xs font-black text-blue-900 uppercase tracking-widest mb-4 flex items-center">
+            <span className="relative flex h-2 w-2 mr-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+            </span>
+            Canlı Operasyon Akışı
+          </h4>
+          <div className="space-y-3">
+            <div className="flex items-center text-xs text-gray-600 bg-white p-2 rounded shadow-sm">
+              <span className="font-bold text-blue-600 mr-2">[03:14]</span> Yeni hakediş faturası yüklendi. Denetim bekleniyor.
+            </div>
+            <div className="flex items-center text-xs text-gray-600 bg-white p-2 rounded shadow-sm">
+              <span className="font-bold text-green-600 mr-2">[01:45]</span> Demir Talebi #42 için eşleşme sağlandı.
+            </div>
+          </div>
+        </div>
+    </div>;
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col pt-16">
