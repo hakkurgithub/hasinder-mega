@@ -1,3 +1,4 @@
+import { autoClassify } from '@/lib/radar/sectorClassifier';
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
