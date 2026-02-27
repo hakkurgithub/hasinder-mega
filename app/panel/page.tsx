@@ -126,7 +126,7 @@ export default function DashboardPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
           <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between border-l-4 border-[#1B365D]">
-            <div><p className="text-sm font-medium text-gray-500">Cüzdan Bakiyem</p><p className="text-3xl font-extrabold text-[#1B365D]">₺{user.balance}</p></div>
+            <div><p className="text-sm font-medium text-gray-500">Finansal Takip Bakiyem</p><p className="text-3xl font-extrabold text-[#1B365D]">₺{user.balance}</p></div>
             <div className="w-12 h-12 bg-blue-50 text-[#1B365D] rounded-full flex items-center justify-center text-2xl"><i className="ri-wallet-3-line"></i></div>
           </div>
           <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between border-l-4 border-green-500">
