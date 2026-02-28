@@ -117,6 +117,35 @@ export default function AdminDashboard() {
             </p>
           </div>
         </div>
+      
+        {/* Otonom Mali Raporlama Tablosu */}
+        <div className="mt-8 bg-white p-6 rounded-2xl shadow-sm border border-gold-100">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-sm font-black text-[#1B365D] uppercase tracking-widest">Mali Durum ve Kâr/Zarar (Otonom)</h3>
+            <span className="text-[10px] bg-green-100 text-green-700 px-2 py-1 rounded font-bold">VUK UYUMLU</span>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="p-3 bg-gray-50 rounded-lg">
+              <p className="text-[10px] text-gray-500 uppercase">Brüt Hacim</p>
+              <p className="text-lg font-bold text-gray-900">₺1.420.000</p>
+            </div>
+            <div className="p-3 bg-gray-50 rounded-lg">
+              <p className="text-[10px] text-gray-500 uppercase">Top. Komisyon</p>
+              <p className="text-lg font-bold text-blue-900">₺42.600</p>
+            </div>
+            <div className="p-3 bg-red-50 rounded-lg border border-red-100">
+              <p className="text-[10px] text-red-500 uppercase">Hakediş Ödemeleri</p>
+              <p className="text-lg font-bold text-red-700">₺34.080</p>
+            </div>
+            <div className="p-3 bg-green-50 rounded-lg border border-green-100">
+              <p className="text-[10px] text-green-500 uppercase">Net Platform Kârı</p>
+              <p className="text-lg font-bold text-green-700">₺8.520</p>
+            </div>
+          </div>
+          <button className="w-full mt-4 py-2 border-2 border-dashed border-gray-200 text-gray-400 text-xs rounded-xl hover:border-[#D4AF37] hover:text-[#D4AF37] transition-all">
+             ��� Aylık Mali Müşavir Raporu Oluştur (PDF)
+          </button>
+        </div>
       </div>
     </div>;
 
