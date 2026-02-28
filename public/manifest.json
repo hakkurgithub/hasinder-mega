@@ -1,0 +1,16 @@
+{
+  "name": "TİB Ağı - Dijital Borsa",
+  "short_name": "TİB Ağı",
+  "description": "Karanlık Fabrika - Otonom Ticaret Platformu",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0A192F",
+  "theme_color": "#D4AF37",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}
