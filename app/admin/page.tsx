@@ -146,6 +146,39 @@ export default function AdminDashboard() {
              ��� Aylık Mali Müşavir Raporu Oluştur (PDF)
           </button>
         </div>
+      
+        {/* Finansal Röntgen - Üst Yönetici Özeti */}
+        <div className="mt-10 bg-[#0A192F] p-8 rounded-3xl border-2 border-[#D4AF37] shadow-[0_0_30px_rgba(212,175,55,0.1)]">
+          <div className="flex justify-between items-start mb-8">
+            <div>
+              <h2 className="text-2xl font-black text-white italic tracking-tighter">FINANSAL RÖNTGEN</h2>
+              <p className="text-[#D4AF37] text-[10px] uppercase font-bold tracking-widest">Veri Tarihi: 28.02.2026 14:40</p>
+            </div>
+            <div className="bg-green-500/20 text-green-400 text-[10px] px-3 py-1 rounded-full font-black border border-green-500/30">
+              SİSTEM MUTABIK
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+            <div>
+              <p className="text-blue-300 text-[10px] mb-1">YILLIK TİCARET HACMİ</p>
+              <p className="text-3xl font-black text-white">₺48.250.000</p>
+            </div>
+            <div>
+              <p className="text-blue-300 text-[10px] mb-1">DAĞITILACAK HAKEDİŞ</p>
+              <p className="text-3xl font-black text-[#D4AF37]">₺1.447.500</p>
+            </div>
+            <div>
+              <p className="text-blue-300 text-[10px] mb-1">NET PLATFORM KAZANCI</p>
+              <p className="text-3xl font-black text-green-400">₺361.875</p>
+            </div>
+          </div>
+          <div className="mt-8 pt-6 border-t border-blue-900/50 flex justify-between items-center">
+            <p className="text-[9px] text-blue-500 italic">28.02.2026 KVKK ve VUK Denetim Standartlarına Uygundur.</p>
+            <button className="bg-white/5 hover:bg-white/10 text-white text-[10px] px-4 py-2 rounded-lg transition-all">
+              BİLANÇO DETAYLARINI İNDİR (CSV)
+            </button>
+          </div>
+        </div>
       </div>
     </div>;
 
