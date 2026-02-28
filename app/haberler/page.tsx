@@ -1,4 +1,4 @@
-import NewsCard from '@/components/news/NewsCard';
+import NewsCard from '../../components/news/NewsCard';
 
 const hasInsanderNews = [
   { 
@@ -25,29 +25,22 @@ export default function HasInsanderNews() {
   return (
     <div className="bg-gray-50 min-h-screen py-12 px-6">
       <div className="max-w-7xl mx-auto">
-        {/* HAS İNSANDER MANŞET */}
         <div className="flex flex-col mb-12 border-l-8 border-[#D4AF37] pl-6">
-          <h1 className="text-4xl font-black text-[#1B365D] tracking-tighter">
+          <h1 className="text-4xl font-black text-[#1B365D] tracking-tighter uppercase">
             HAS İNSANDER <span className="text-[#D4AF37]">HABER</span>
           </h1>
           <p className="text-[10px] text-gray-400 font-mono mt-1 uppercase tracking-widest">
-            İstanbul & Hatay Sanayici ve İş İnsanları Yatırım ve İş Birliği Platformu
+            İSTANBUL & HATAY SANAYİCİ VE İŞ İNSANLARI PLATFORMU
           </p>
         </div>
         
-        {/* Ana Manşet */}
-        <div className="relative h-[500px] rounded-3xl overflow-hidden mb-12 shadow-2xl group border-b-4 border-[#D4AF37]">
-          <img src={hasInsanderNews[0].image} className="w-full h-full object-cover group-hover:scale-105 transition-all duration-1000" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0A192F] via-transparent to-transparent flex flex-col justify-end p-10">
-            <div className="bg-[#D4AF37] text-[#0A192F] text-[10px] font-black px-3 py-1 rounded-full w-fit mb-4">FLAŞ HABER</div>
-            <h2 className="text-white text-4xl font-black mb-4 max-w-3xl leading-tight">{hasInsanderNews[0].title}</h2>
-            <p className="text-blue-100 text-lg max-w-2xl opacity-80">{hasInsanderNews[0].summary}</p>
-          </div>
-        </div>
-
-        {/* Haber Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
           {hasInsanderNews.map(news => <NewsCard key={news.id} {...news} />)}
+        </div>
+        
+        <div className="mt-20 text-center opacity-30">
+          <img src="https://raw.githubusercontent.com/hakkurgithub/images/main/silicon-campus-logo.jpg" alt="Silicon Campus" className="h-8 mx-auto mb-2 grayscale" />
+          <p className="text-[9px] uppercase font-mono italic">Powered by Silicon Campus - All Rights Reserved</p>
         </div>
       </div>
     </div>
