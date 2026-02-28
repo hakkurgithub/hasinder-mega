@@ -87,7 +87,37 @@ export default function AdminDashboard() {
               <span className="font-bold text-green-600 mr-2">[01:45]</span> Demir Talebi #42 için eşleşme sağlandı.
             </div>
           </div>
+        
+        {/* Otonom Piyasa Isı Haritası */}
+        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+            <h3 className="text-sm font-black text-gray-900 mb-4 uppercase">Sektörel Talep Yoğunluğu</h3>
+            <div className="space-y-4">
+              <div className="flex justify-between items-center text-xs">
+                <span className="font-bold">İNŞAAT (Demir/Beton)</span>
+                <span className="text-green-600 font-black">↑ %24 ARTIŞ</span>
+              </div>
+              <div className="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
+                <div className="bg-[#D4AF37] h-full" style={{width: '75%'}}></div>
+              </div>
+              <div className="flex justify-between items-center text-xs">
+                <span className="font-bold">GIDA (Bakliyat/Yağ)</span>
+                <span className="text-blue-600 font-black">STABİL</span>
+              </div>
+              <div className="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
+                <div className="bg-[#1B365D] h-full" style={{width: '40%'}}></div>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-[#1B365D] p-6 rounded-2xl shadow-lg text-white">
+            <h3 className="text-sm font-black text-[#D4AF37] mb-4 uppercase">Robotik Tahmin (Next-7 Days)</h3>
+            <p className="text-xs text-blue-200 leading-relaxed">
+              Yapay zeka analizine göre; Hatay bölgesinde önümüzdeki 7 gün içinde 'İnşaat Demiri' talebinde %15'lik bir yoğunlaşma bekleniyor. Aracıların bu bölgeye yönlendirilmesi önerilir.
+            </p>
+          </div>
         </div>
+      </div>
     </div>;
 
   return (
