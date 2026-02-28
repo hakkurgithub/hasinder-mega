@@ -1,48 +1,56 @@
 import React from 'react';
 import Link from 'next/link';
 
-export default function LandingPage() {
+export default function HasinderMainPage() {
   return (
-    <div className="min-h-screen bg-[#0A192F] text-white flex flex-col items-center justify-center p-4">
-      {/* Karanlık Fabrika Glow Efekti */}
-      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent animate-pulse"></div>
-      
-      <div className="max-w-4xl text-center space-y-8">
-        <h1 className="text-5xl md:text-7xl font-black tracking-tighter italic">
-          TİB <span className="text-[#D4AF37]">AĞI</span>
+    <div className="min-h-screen bg-white">
+      {/* Üst Navigasyon - Dernek Menüsü */}
+      <nav className="flex justify-between items-center p-6 bg-[#1B365D] text-white">
+        <div className="text-2xl font-black tracking-tighter">HASİNDER</div>
+        <div className="hidden md:flex space-x-6 text-xs uppercase font-bold">
+          <Link href="/hakkimizda">Dernek</Link>
+          <Link href="/haberler">Haberler</Link>
+          <Link href="/etkinlikler">Etkinlikler</Link>
+          <Link href="/iletisim">İletişim</Link>
+        </div>
+      </nav>
+
+      {/* TİB Borsa Giriş Alanı (VİTRİN) */}
+      <div className="bg-gradient-to-b from-[#1B365D] to-[#0A192F] py-24 px-6 text-center text-white border-b-4 border-[#D4AF37]">
+        <h2 className="text-[#D4AF37] text-sm font-bold tracking-[0.3em] uppercase mb-4 animate-pulse">
+          Otonom Ticaret Çağı Başladı
+        </h2>
+        <h1 className="text-5xl md:text-7xl font-black mb-8 italic">
+          TİB <span className="text-[#D4AF37]">TİCARET AĞI</span>
         </h1>
-        <p className="text-xl text-blue-200 font-light tracking-widest uppercase">
-          Dijital Ticaret Borsası & Otonom Aracı Platformu
+        <p className="max-w-2xl mx-auto text-blue-100 text-lg font-light mb-12">
+          Hatay'ın gücünü dijital borsayla birleştiriyoruz. Aracıların, satıcıların ve alıcıların otonom güvenli buluşma noktası.
         </p>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm py-8">
-          <div className="border border-blue-900 p-4 rounded-xl bg-blue-950/50">
-            <p className="text-[#D4AF37] font-bold">7/24 OTONOM</p>
-            <p className="text-gray-400">Kendi Kendini Onaran Sistem</p>
-          </div>
-          <div className="border border-blue-900 p-4 rounded-xl bg-blue-950/50">
-            <p className="text-[#D4AF37] font-bold">KVKK 2026 UYUMLU</p>
-            <p className="text-gray-400">OTP ve QR Doğrulama</p>
-          </div>
-          <div className="border border-blue-900 p-4 rounded-xl bg-blue-950/50">
-            <p className="text-[#D4AF37] font-bold">DİJİTAL NOTER</p>
-            <p className="text-gray-400">Anlık PDF Sözleşme Üretimi</p>
-          </div>
-        </div>
-
-        <div className="flex flex-col md:flex-row gap-4 justify-center items-center">
-          <Link href="/panel" className="bg-[#D4AF37] text-[#0A192F] px-12 py-4 rounded-full font-black text-lg hover:scale-105 transition-all shadow-[0_0_20px_rgba(212,175,55,0.3)]">
-            SİSTEME GİRİŞ YAP
-          </Link>
-          <Link href="/yasal" className="text-blue-300 underline text-sm hover:text-white">
-            Yasal Mevzuat ve KVKK Aydınlatma
-          </Link>
+        <Link href="/giris" className="inline-block bg-[#D4AF37] text-[#0A192F] px-16 py-5 rounded-full font-black text-xl hover:scale-105 transition-all shadow-[0_10px_40px_rgba(212,175,55,0.4)]">
+          BORSAYA GİRİŞ YAP →
+        </Link>
+        
+        <div className="mt-8 text-[10px] text-blue-400 font-mono">
+          [ 28.02.2026 KVKK & OTP SECURED SYSTEM ]
         </div>
       </div>
 
-      <footer className="mt-20 text-[10px] text-blue-800 font-mono">
-        SYSTEM STATUS: ONLINE | SECURITY: AES-256 | REGULATION: 28.02.2026 COMPLIANT
-      </footer>
+      {/* Dernek Faaliyetleri (Alt Bölüm) */}
+      <div className="py-20 max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-12">
+        <div className="space-y-4">
+          <h3 className="text-xl font-bold text-[#1B365D] border-b-2 border-gray-100 pb-2">Dernek Haberleri</h3>
+          <p className="text-sm text-gray-500">Hasinder’in yeni projeleri ve Hatay için attığı adımlar...</p>
+        </div>
+        <div className="space-y-4">
+          <h3 className="text-xl font-bold text-[#1B365D] border-b-2 border-gray-100 pb-2">Etkinlikler</h3>
+          <p className="text-sm text-gray-500">Gelecek ay düzenlenecek olan iş dünyası zirvesi detayları...</p>
+        </div>
+        <div className="space-y-4">
+          <h3 className="text-xl font-bold text-[#1B365D] border-b-2 border-gray-100 pb-2">İstatistikler</h3>
+          <p className="text-sm text-gray-500">TİB Ağı üzerinden gerçekleşen aylık ticaret hacmi verileri...</p>
+        </div>
+      </div>
     </div>
   );
 }
