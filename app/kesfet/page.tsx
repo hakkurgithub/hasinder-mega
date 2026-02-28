@@ -2,8 +2,6 @@
 'use client';
 
 import { useState } from 'react';
-import Header from '../../components/Header';
-import Footer from '../../components/Footer';
 import CompanyCard from './CompanyCard';
 import SearchFilters from './SearchFilters';
 
@@ -140,7 +138,6 @@ export default function KesfetPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
       <main className="pt-16">
         {/* Hero Section */}
         <section className="bg-gradient-to-r from-[#1B365D] to-[#2E5984] py-16">
@@ -204,7 +201,6 @@ export default function KesfetPage() {
           </div>
         </section>
       </main>
-      <Footer />
     </div>
   );
 }

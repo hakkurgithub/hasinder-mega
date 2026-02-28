@@ -1,8 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Header from '../../components/Header';
-import Footer from '../../components/Footer';
 
 export default function FirmaProfilPage() {
   const [activeProductIndex, setActiveProductIndex] = useState(0);
@@ -115,7 +113,6 @@ export default function FirmaProfilPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
 
       <main className="pt-16">
         {/* Hero Section */}
@@ -407,7 +404,6 @@ export default function FirmaProfilPage() {
         </section>
       </main>
 
-      <Footer />
     </div>
   );
 }

@@ -3,8 +3,6 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
 
 const opportunityData = {
   '1': {
@@ -244,7 +242,6 @@ export default function SmartFarmDetail({ opportunityId }: { opportunityId: stri
   if (!opportunity) {
     return (
       <main className="min-h-screen">
-        <Header />
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="text-center">
             <h1 className="text-2xl font-bold text-[#1B365D] mb-4">Proje Bulunamadı</h1>
@@ -253,7 +250,6 @@ export default function SmartFarmDetail({ opportunityId }: { opportunityId: stri
             </Link>
           </div>
         </div>
-        <Footer />
       </main>
     );
   }
@@ -410,7 +406,6 @@ export default function SmartFarmDetail({ opportunityId }: { opportunityId: stri
 
   return (
     <main className="min-h-screen">
-      <Header />
 
       {/* Hero Section */}
       <section className="relative h-96 overflow-hidden">
@@ -835,7 +830,6 @@ export default function SmartFarmDetail({ opportunityId }: { opportunityId: stri
 
       {showInterestForm && <InterestForm />}
 
-      <Footer />
     </main>
   );
 }
