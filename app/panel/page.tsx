@@ -113,6 +113,12 @@ export default function DashboardPage() {
           <button onClick={() => { localStorage.removeItem('tib_user'); window.location.href = '/giris'; }} className="flex items-center space-x-3 text-red-400 hover:text-red-300 w-full p-2 transition-colors">
             <i className="ri-logout-box-r-line text-xl"></i> <span>Güvenli Çıkış</span>
           </button>
+        <div className="flex items-start space-x-2 p-3 bg-red-50 rounded-lg border border-red-100 mt-4">
+          <input type="checkbox" required className="mt-1" />
+          <p className="text-[10px] text-red-800">
+            28.02.2026 KVKK İlke Kararı uyarınca; SMS doğrulama (2FA) kullanılmasını, verilerimin şifreli saklanmasını ve işlem kayıtlarımın hukuki delil sayılmasını kabul ediyorum.
+          </p>
+        </div>
         </div>
       </aside>
 
