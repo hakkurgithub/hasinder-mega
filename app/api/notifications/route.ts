@@ -1,8 +1,4 @@
 import { NextResponse } from 'next/server';
-
 export async function GET() {
-  return NextResponse.json({ 
-    notifications: [],
-    status: 'No pending alerts' 
-  });
+  return NextResponse.json({ alerts: [] });
 }
