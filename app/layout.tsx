@@ -5,9 +5,9 @@ import './globals.css';
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="tr">
-      <body>
+      <body className="antialiased font-sans">
         <Header />
-        <main className="min-h-[80vh] bg-white">
+        <main className="min-h-screen bg-gray-50">
           {children}
         </main>
         <Footer />
