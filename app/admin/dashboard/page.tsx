@@ -11,6 +11,16 @@ export default function AdminDashboard() {
           <h3 className="text-xs uppercase font-bold">Günlük Hacim</h3>
           <p className="text-4xl font-black">₺2.4M</p>
         </div>
+      
+        <div className="mt-6 p-4 bg-[#D4AF37]/10 border border-[#D4AF37] rounded-xl flex justify-between items-center">
+          <div>
+            <p className="text-[#D4AF37] font-bold text-xs uppercase">Yeni Üye Davet Linki</p>
+            <p className="text-[10px] text-white/60 font-mono">https://hasinder.com/giris?code=HASINDER2026</p>
+          </div>
+          <button className="bg-[#D4AF37] text-[#0A192F] px-4 py-2 rounded-lg text-[10px] font-black uppercase">
+            Link Kopyala
+          </button>
+        </div>
       </div>
     </div>
   );
