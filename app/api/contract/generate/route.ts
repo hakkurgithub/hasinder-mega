@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import { contractHeader, contractBody } from '@/lib/contract/template';
 
 export async function POST(request: Request) {
   try {
@@ -7,10 +6,7 @@ export async function POST(request: Request) {
     const date = new Date().toLocaleDateString('tr-TR');
     const contractNo = `TIB-${Date.now()}`;
 
-    const fullContract = contractHeader(contractNo, date) + contractBody(buyerName, sellerName, productName, commission);
-
-    // Otonom Arşivleme: Belgeyi veritabanına veya Cloud Storage'a yolla
-    console.log(`��� SÖZLEŞME OLUŞTURULDU: ${contractNo}`);
+    const fullContract = `Contract No: ${contractNo} | Date: ${date} | Buyer: ${buyerName} | Seller: ${sellerName}`;
 
     return NextResponse.json({ 
       success: true, 
@@ -18,6 +14,6 @@ export async function POST(request: Request) {
       contractNo: contractNo 
     });
   } catch (error) {
-    return NextResponse.json({ error: 'Sözleşme botu hata verdi.' }, { status: 500 });
+    return NextResponse.json({ error: 'Contract Bot Error' }, { status: 500 });
   }
 }
