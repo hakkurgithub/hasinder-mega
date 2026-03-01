@@ -25,7 +25,7 @@ export default function MemberDashboard() {
             <p className="text-[10px] opacity-60 font-mono tracking-widest uppercase">Silicon Campus Secured Node v3.2</p>
           </div>
           <div className="bg-green-500/20 px-6 py-2 rounded-2xl border border-green-500/30">
-            <p className="text-[10px] text-green-400 font-black uppercase">LIVE TRADE FLOW ACTIVE</p>
+            <p className="text-[10px] text-green-400 font-black uppercase tracking-widest">LIVE TRADE FLOW ACTIVE</p>
           </div>
         </div>
 
@@ -38,16 +38,16 @@ export default function MemberDashboard() {
                 <table className="w-full text-left text-sm">
                   <thead>
                     <tr className="text-gray-400 uppercase text-[10px] border-b">
-                      <th className="pb-3">Islem ID</th>
-                      <th className="pb-3">Ticaret Tanimi</th>
-                      <th className="pb-3">Hacim</th>
-                      <th className="pb-3">Durum</th>
+                      <th className="pb-3 px-2">ID</th>
+                      <th className="pb-3">TANIM</th>
+                      <th className="pb-3">HACIM</th>
+                      <th className="pb-3">DURUM</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y">
                     {trades.map((trade) => (
                       <tr key={trade.id} onClick={() => setSelectedTrade(trade)} className="hover:bg-blue-50 cursor-pointer transition-all">
-                        <td className="py-4 font-mono text-blue-600 font-bold">{trade.id}</td>
+                        <td className="py-4 px-2 font-mono text-blue-600 font-bold">{trade.id}</td>
                         <td className="py-4 font-bold">{trade.title}</td>
                         <td className="py-4 text-[#D4AF37] font-black">{trade.amount}</td>
                         <td className="py-4">
@@ -72,7 +72,7 @@ export default function MemberDashboard() {
               <p className="text-center font-bold text-xs uppercase">UYE PANELI</p>
               <div className="pt-4 mt-4 border-t border-white/10 flex justify-between text-[10px]">
                 <span>GUVEN SKORU:</span>
-                <span className="text-[#D4AF37] font-black italic">85/100</span>
+                <span className="text-[#D4AF37] font-black italic text-right">85/100</span>
               </div>
             </div>
           </div>
@@ -83,7 +83,7 @@ export default function MemberDashboard() {
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
           <div className="bg-white w-full max-w-md rounded-[2.5rem] p-8 shadow-2xl border-t-8 border-[#D4AF37]">
             <div className="flex justify-between items-start mb-6">
-              <h3 className="font-black text-xl uppercase italic">{selectedTrade.id} DETAYLARI</h3>
+              <h3 className="font-black text-xl uppercase italic tracking-tighter">{selectedTrade.id} DETAYLARI</h3>
               <button onClick={() => setSelectedTrade(null)} className="text-gray-400 hover:text-red-500 font-bold uppercase text-xs">KAPAT</button>
             </div>
             <div className="space-y-4">
