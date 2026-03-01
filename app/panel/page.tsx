@@ -16,14 +16,13 @@ export default function MemberDashboard() {
           <div className="text-[10px] font-mono text-gray-400 uppercase italic">Silicon Campus Secured Trade Node: #TIB-2026</div>
         </div>
 
-        {/* ANA BORSA MOTORU */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           
           <div className="lg:col-span-3 space-y-6">
-            {/* TICARET VE ESLESME LISTESI */}
+            {/* TICARET VE ARABULUCULUK MERKEZI */}
             <div className="bg-[#1B365D] text-white p-6 rounded-[2rem] shadow-2xl border-b-4 border-[#D4AF37]">
               <div className="flex justify-between items-center mb-6 border-b border-white/10 pb-4">
-                <h2 className="font-black text-lg uppercase italic tracking-tighter text-[#D4AF37]">AKTIF TICARET VE ARABULUCULUK LISTESI</h2>
+                <h2 className="font-black text-lg uppercase italic tracking-tighter text-[#D4AF37]">AKTIF TICARET VE ESLESME LISTESI</h2>
                 <button className="bg-[#D4AF37] text-[#0A192F] px-4 py-1 rounded-full text-[10px] font-black uppercase">YENI ILAN VER</button>
               </div>
               <div className="bg-white/5 rounded-2xl p-4 min-h-[400px]">
@@ -31,20 +30,20 @@ export default function MemberDashboard() {
               </div>
             </div>
 
-            {/* ONAYLANAN KONTRATLAR */}
+            {/* ONAYLI SOZLESMELER */}
             <div className="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100">
               <h2 className="font-black text-xs uppercase mb-4 border-b pb-2">ONAYLANAN KONTRATLARIM</h2>
               <ContractList />
             </div>
           </div>
 
-          {/* SAG PANEL */}
+          {/* SAG PANEL: KIMLIK VE DESTEK */}
           <div className="space-y-6">
             <div className="bg-gradient-to-br from-[#1B365D] to-[#0A192F] p-6 rounded-[2rem] shadow-xl text-white border-t-4 border-[#D4AF37]">
               <div className="text-[8px] font-black uppercase opacity-40 mb-4 text-center">TIB Dijital Kimlik Karti</div>
-              <div className="flex justify-center mb-4 text-black">
-                <div className="bg-white p-2 rounded-xl text-center font-mono text-[8px]">
-                  VERIFIED<br/>BY<br/>SILICON CAMPUS
+              <div className="flex justify-center mb-4">
+                <div className="bg-white p-3 rounded-xl">
+                  <div className="w-20 h-20 bg-black flex items-center justify-center text-[10px] text-white text-center font-mono">TIB-VERIFIED</div>
                 </div>
               </div>
               <p className="text-center font-bold text-xs">SAYIN UYE</p>
@@ -54,18 +53,17 @@ export default function MemberDashboard() {
               </div>
             </div>
 
-            {/* KUCUK ISTATISTIK */}
             <div className="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100">
                <h4 className="text-[9px] font-black uppercase mb-4 opacity-50">Haftalik Performans</h4>
-               <div className="flex items-end gap-1 h-20">
-                  <div className="bg-gray-100 w-full h-[40%] rounded"></div>
-                  <div className="bg-[#D4AF37] w-full h-[80%] rounded"></div>
-                  <div className="bg-gray-100 w-full h-[30%] rounded"></div>
-                  <div className="bg-[#1B365D] w-full h-[60%] rounded"></div>
+               <div className="flex items-end gap-1 h-16">
+                  <div className="bg-gray-100 w-full h-[40%] rounded-sm"></div>
+                  <div className="bg-[#D4AF37] w-full h-[80%] rounded-sm"></div>
+                  <div className="bg-gray-100 w-full h-[30%] rounded-sm"></div>
+                  <div className="bg-[#1B365D] w-full h-[60%] rounded-sm"></div>
                </div>
             </div>
             
-            <a href="https://wa.me/905333715577" className="block bg-green-500 text-white text-center p-4 rounded-2xl text-xs font-black shadow-lg hover:bg-green-600 transition-all uppercase">
+            <a href="/iletisim" className="block bg-green-600 text-white text-center p-4 rounded-2xl text-[10px] font-black shadow-lg hover:bg-green-700 transition-all uppercase">
               BASKAN DESTEK HATTI
             </a>
           </div>
