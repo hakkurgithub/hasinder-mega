@@ -9,7 +9,7 @@ export default function Footer() {
           <div className="text-[10px] space-y-2 opacity-80">
             <p className="font-bold">Hakkı KURT</p>
             <p>Adile Naşit Caddesi, Olcay Sevalista Residence, Esenyurt/İstanbul</p>
-            <a href="https://wa.me/905333715577" className="block text-green-400 font-bold hover:underline italic">WhatsApp: 0533 371 55 77</a>
+            <a href="/iletisim" className="block text-green-400 font-bold hover:underline italic">WhatsApp: 0533 371 55 77</a>
             <a href="mailto:kurt.hakki@gmail.com" className="block text-blue-300 hover:underline italic">kurt.hakki@gmail.com</a>
           </div>
         </div>

@@ -16,7 +16,7 @@ export default function Header() {
           <Link href="/haberler" className="hover:text-[#D4AF37]">Haberler</Link>
           <Link href="/kesfet" className="hover:text-[#D4AF37]">Keşfet</Link>
           <Link href="/panel" className="text-[#D4AF37] border border-[#D4AF37]/50 px-2 py-1 rounded bg-[#D4AF37]/10">BORSA PANELİ</Link>
-          <a href="https://wa.me/905333715577" target="_blank" className="text-green-400">YARDIM</a>
+          <a href="/iletisim" target="_blank" className="text-green-400">YARDIM</a>
         </nav>
       </div>
     </header>
