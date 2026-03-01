@@ -72,7 +72,7 @@ export default function MemberDashboard() {
               <p className="text-center font-bold text-xs uppercase">UYE PANELI</p>
               <div className="pt-4 mt-4 border-t border-white/10 flex justify-between text-[10px]">
                 <span>GUVEN SKORU:</span>
-                <span className="text-[#D4AF37] font-black italic text-right">85/100</span>
+                <span className="text-[#D4AF37] font-black italic">85/100</span>
               </div>
             </div>
           </div>
@@ -84,7 +84,7 @@ export default function MemberDashboard() {
           <div className="bg-white w-full max-w-md rounded-[2.5rem] p-8 shadow-2xl border-t-8 border-[#D4AF37]">
             <div className="flex justify-between items-start mb-6">
               <h3 className="font-black text-xl uppercase italic tracking-tighter">{selectedTrade.id} DETAYLARI</h3>
-              <button onClick={() => setSelectedTrade(null)} className="text-gray-400 hover:text-red-500 font-bold uppercase text-xs">KAPAT</button>
+              <button onClick={() => setSelectedTrade(null)} className="text-gray-400 hover:text-red-500 font-bold uppercase text-[10px]">KAPAT</button>
             </div>
             <div className="space-y-4">
               <div className="bg-gray-50 p-4 rounded-2xl">
