@@ -8,28 +8,30 @@ const sb=createClient(S_URL,S_KEY);
 
 export default function D(){
   const [t,setT]=useState([]);
-  const [loading,setLoading]=useState(false);
+  const [l,setL]=useState(false);
   const get=async()=>{
     const {data}=await sb.from('trades').select('*').order('created_at',{ascending:false});
-    if(data)setT(data);
+    if(data) setT(data);
   };
   useEffect(()=>{get();},[]);
   const add=async()=>{
-    setLoading(true);
-    const {error}=await sb.from('trades').insert([{title:'ICRAAT BUTONU OK',amount:'1.0M TL',status:'AKTIF'}]);
-    if(error) alert('Hata: ' + error.message);
-    else { alert('Islem Basarili!'); get(); }
-    setLoading(false);
+    setL(true);
+    const {error}=await sb.from('trades').insert([{title:'OPERASYON TAMAM',amount:'10M TL',status:'AKTIF'}]);
+    if(!error){ alert('BASARILI!'); get(); }
+    setL(false);
   };
   return(
-    <div style={{padding:'50px',textAlign:'center',fontFamily:'sans-serif'}}>
-      <h1 style={{color:'#1B365D'}}>TIB DASHBOARD v10.2</h1>
-      <p>Buton tetiği tamir edildi. Lütfen basıp deneyin.</p>
-      <button onClick={add} disabled={loading} style={{padding:'20px',background:'#1B365D',color:'#D4AF37',fontWeight:'bold',borderRadius:'15px',cursor:'pointer'}}>
-        {loading ? 'YUKLENIYOR...' : '+ ICRAAT EKLE'}
-      </button>
-      <hr style={{margin:'20px'}}/>
-      {t.map(x=><div key={x.id} style={{padding:'10px',borderBottom:'1px solid #eee'}}>{x.title} - {x.amount}</div>)}
+    <div style={{padding:'100px',textAlign:'center',background:'#f0f2f5',minHeight:'100vh',fontFamily:'sans-serif'}}>
+      <div style={{background:'#fff',padding:'40px',borderRadius:'30px',boxShadow:'0 20px 50px rgba(0,0,0,0.1)',display:'inline-block'}}>
+        <h1 style={{color:'#1B365D',margin:'0'}}>TIB HUB v10.3</h1>
+        <p style={{color:'#888',marginBottom:'30px'}}>Fabrika Artik Yayinda ve Hazir.</p>
+        <button onClick={add} disabled={l} style={{padding:'20px 50px',background:'#1B365D',color:'#D4AF37',fontWeight:'bold',borderRadius:'20px',cursor:'pointer',border:'none',fontSize:'20px'}}>
+          {l ? 'ISLEMDE...' : '+ ICRAAT EKLE'}
+        </button>
+        <div style={{marginTop:'40px',textAlign:'left'}}>
+          {t.map(x=><div key={x.id} style={{padding:'15px',borderBottom:'1px solid #eee'}}><b>{x.title}</b> - {x.amount}</div>)}
+        </div>
+      </div>
     </div>
   );
 }
