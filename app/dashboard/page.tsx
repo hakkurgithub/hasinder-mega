@@ -11,9 +11,9 @@ const [t,setT]=useState([]);
 const get=async()=>{const {data}=await sb.from('trades').select('*').order('created_at',{ascending:false});if(data)setT(data);};
 useEffect(()=>{get();},[]);
 return(<div style={{padding:'50px',textAlign:'center',fontFamily:'sans-serif'}}>
-<h1 style={{color:'#1B365D'}}>TIB HUB v9.0</h1>
-<p>Icraat Merkezi Aktif.</p>
-<button onClick={async()=>{await sb.from('trades').insert([{title:'YENI ISLEM',amount:'1.250.000 TL',status:'OK'}]);get();}} style={{padding:'20px',background:'#1B365D',color:'#D4AF37',fontWeight:'bold',borderRadius:'15px',cursor:'pointer'}}>+ HIZLI ISLEM EKLE</button>
+<h1 style={{color:'#1B365D'}}>TIB DASHBOARD v10</h1>
+<p>Sistem artik yayinda.</p>
+<button onClick={async()=>{await sb.from('trades').insert([{title:'GECE ICRAATI',amount:'2M TL',status:'OK'}]);get();}} style={{padding:'20px',background:'#1B365D',color:'#D4AF37',fontWeight:'bold',borderRadius:'15px',cursor:'pointer'}}>+ TEST ILANI EKLE</button>
 <hr style={{margin:'30px 0'}}/>
 <div style={{display:'flex',flexDirection:'column',gap:'10px'}}>
 {t.map(x=><div key={x.id} style={{background:'#fff',padding:'15px',borderRadius:'10px',boxShadow:'0 2px 5px rgba(0,0,0,0.1)'}}><b>{x.title}</b> - {x.amount}</div>)}
