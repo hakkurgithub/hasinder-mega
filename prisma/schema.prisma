@@ -3,9 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  directUrl  = env("DIRECT_URL")
 }
 
 model User {
@@ -17,15 +17,15 @@ model User {
   email     String   @unique
   password  String
   balance   Float    @default(0.0)
-  
+
   status    String   @default("ONAY_BEKLIYOR")
   tier      String   @default("STANDART")
   isAdmin   Boolean  @default(false)
-  
-  // YENİ EKLENEN PROFİL ALANLARI
+
+  // Profil alanları
   iban      String?
   phone     String?
-  
+
   createdAt DateTime @default(now())
 
   demands     Demand[]    @relation("DemandCreator")
@@ -42,6 +42,7 @@ model Demand {
   creatorId String
   creator   User     @relation("DemandCreator", fields: [creatorId], references: [id])
   createdAt DateTime @default(now())
+
   mediations Mediation[]
 }
 
