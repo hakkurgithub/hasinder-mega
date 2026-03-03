@@ -1,108 +1,57 @@
 'use client';
-import React, { useState, useEffect } from 'react';
-import { createClient } from '@supabase/supabase-js';
+import React,{useState,useEffect} from 'react';
+import {createClient} from '@supabase/supabase-js';
 
-const S_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://scxwhchnuhsuzkfvqmqw.supabase.co';
-const S_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNjeHdoY2hudWhzdXprZnZxbXF3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwMDM2OTQsImV4cCI6MjA4NzU3OTY5NH0.C_5GC8Eg9JFZuvtjJHKRYcbnVWSBgJ22ySC7Iti3a8w';
-const supabase = createClient(S_URL, S_KEY);
+const URL=process.env.NEXT_PUBLIC_SUPABASE_URL||'https://scxwhchnuhsuzkfvqmqw.supabase.co';
+const KEY=process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY||'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNjeHdoY2hudWhzdXprZnZxbXF3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwMDM2OTQsImV4cCI6MjA4NzU3OTY5NH0.C_5GC8Eg9JFZuvtjJHKRYcbnVWSBgJ22ySC7Iti3a8w';
+const sb=createClient(URL,KEY);
 
-export default function MemberDashboard() {
-  const [trades, setTrades] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [formData, setFormData] = useState({ title: '', amount: '', category: 'GIDA', detail: '' });
+export default function Panel(){
+const [t,setT]=useState([]);
+const [l,setL]=useState(true);
+const [m,setM]=useState(false);
+const [f,setF]=useState({title:'',amount:'',cat:'GIDA'});
 
-  const fetchBorsa = async () => {
-    setLoading(true);
-    const { data, error } = await supabase.from('trades').select('*').order('created_at', { ascending: false });
-    if (!error) setTrades(data || []);
-    setLoading(false);
-  };
+const get=async()=>{setL(true);const {data}=await sb.from('trades').select('*').order('created_at',{ascending:false});if(data)setT(data);setL(false);};
+useEffect(()=>{get();},[]);
 
-  useEffect(() => { fetchBorsa(); }, []);
+const add=async(e)=>{e.preventDefault();const {error}=await sb.from('trades').insert([{...f,status:'ACTIVE'}]);if(!error){setF({title:'',amount:'',cat:'GIDA'});setM(false);get();}};
 
-  const handleCreate = async (e) => {
-    e.preventDefault();
-    const { error } = await supabase.from('trades').insert([{ ...formData, status: 'AKTIF' }]);
-    if (!error) {
-      setFormData({ title: '', amount: '', category: 'GIDA', detail: '' });
-      setIsModalOpen(false);
-      fetchBorsa();
-    }
-  };
-
-  return (
-    <div className="min-h-screen bg-[#F0F2F5] text-[#1B365D]">
-      {/* Chrome Translation Blocker */}
-      <meta name="google" content="notranslate" />
-      
-      <div className="flex">
-        <aside className="w-64 bg-[#1B365D] min-h-screen p-6 text-white hidden lg:block">
-          <h1 className="text-xl font-black text-[#D4AF37] mb-10">TIB ADMIN</h1>
-          <nav className="space-y-4 font-bold">
-            <div className="p-3 bg-white/10 rounded-xl">Borsa Live</div>
-            <div className="p-3 opacity-50">Transactions</div>
-            <div className="p-3 opacity-50">Profile</div>
-          </nav>
-        </aside>
-
-        <main className="flex-1 p-4 lg:p-10 space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-white p-6 rounded-3xl shadow-sm border-b-4 border-blue-500">
-              <p className="text-[10px] text-gray-400 font-bold">ACTIVE ADS</p>
-              <h3 className="text-2xl font-black">{trades.length}</h3>
-            </div>
-            <div className="bg-white p-6 rounded-3xl shadow-sm border-b-4 border-green-500">
-              <p className="text-[10px] text-gray-400 font-bold">REVENUE</p>
-              <h3 className="text-2xl font-black">453k TL</h3>
-            </div>
-            <button onClick={() => setIsModalOpen(true)} className="bg-[#1B365D] text-[#D4AF37] rounded-3xl font-black shadow-xl hover:scale-105 transition-all">
-              + START NEW TRADE
-            </button>
-          </div>
-
-          <div className="bg-white rounded-[2rem] shadow-xl overflow-hidden">
-            <div className="p-8 border-b font-black uppercase">Operation Board</div>
-            <div className="p-4 overflow-x-auto">
-              {loading ? (
-                <p className="text-center py-20 font-bold">Loading Data...</p>
-              ) : (
-                <table className="w-full text-left">
-                  <thead className="text-[10px] text-gray-400 border-b">
-                    <tr><th className="p-4">Category</th><th>Detail</th><th>Volume</th><th>Status</th></tr>
-                  </thead>
-                  <tbody className="divide-y">
-                    {trades.map((t) => (
-                      <tr key={t.id} className="text-sm font-bold">
-                        <td className="p-4"><span className="bg-blue-100 px-3 py-1 rounded-full text-[9px]">{t.category || 'GIDA'}</span></td>
-                        <td>{t.title}</td>
-                        <td className="text-green-700">{t.amount}</td>
-                        <td className="p-4"><span className="text-[10px] uppercase">{t.status}</span></td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              )}
-            </div>
-          </div>
-        </main>
-      </div>
-
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-[#1B365D]/90 flex items-center justify-center p-4 z-50">
-          <div className="bg-white w-full max-w-md rounded-[2.5rem] p-10 shadow-2xl">
-            <h2 className="text-xl font-black mb-6 uppercase">New Trade Form</h2>
-            <form onSubmit={handleCreate} className="space-y-4">
-              <input placeholder="Item Title" className="p-4 bg-gray-50 rounded-xl w-full" value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} required />
-              <input placeholder="Price / Amount" className="p-4 bg-gray-50 rounded-xl w-full" value={formData.amount} onChange={(e) => setFormData({...formData, amount: e.target.value})} required />
-              <div className="flex justify-end gap-4 pt-4">
-                <button type="button" onClick={() => setIsModalOpen(false)} className="font-bold text-gray-400">CLOSE</button>
-                <button type="submit" className="bg-[#1B365D] text-[#D4AF37] px-8 py-3 rounded-xl font-black">CONFIRM</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-    </div>
-  );
+return(
+<div className="min-h-screen bg-gray-100 p-4 font-sans text-blue-900">
+<div className="max-w-6xl mx-auto space-y-4">
+<div className="bg-blue-900 p-6 rounded-2xl text-white flex justify-between items-center shadow-lg border-b-4 border-yellow-500">
+<div><h1 className="text-xl font-bold italic">TIB HUB V6.4</h1><p className="text-xs opacity-50">Operational Center</p></div>
+<button onClick={()=>setM(true)} className="bg-yellow-500 text-blue-900 px-6 py-2 rounded-xl font-black shadow-md hover:scale-105 transition-all">+ NEW TRADE</button>
+</div>
+<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+<div className="bg-white p-4 rounded-2xl shadow-sm border-l-4 border-blue-500"><p className="text-xs text-gray-400">TOTAL ADS</p><h2 className="text-xl font-bold">{t.length}</h2></div>
+<div className="bg-white p-4 rounded-2xl shadow-sm border-l-4 border-green-500"><p className="text-xs text-gray-400">MATCHES</p><h2 className="text-xl font-bold">12</h2></div>
+<div className="bg-white p-4 rounded-2xl shadow-sm border-l-4 border-yellow-500"><p className="text-xs text-gray-400">PROFIT</p><h2 className="text-xl font-bold">453k TL</h2></div>
+</div>
+<div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+<div className="p-4 border-b font-bold uppercase text-xs">Market Activity</div>
+<div className="p-2 overflow-x-auto">
+{l ? <p className="text-center py-10">Loading...</p> : 
+<table className="w-full text-left text-sm">
+<thead className="text-gray-400 uppercase text-xs"><tr><th className="p-2">Cat</th><th>Title</th><th>Volume</th><th>Status</th></tr></thead>
+<tbody className="divide-y">{t.map((x)=>(<tr key={x.id} className="font-bold border-b"><td className="p-2 text-blue-600">{x.cat||'GIDA'}</td><td className="uppercase">{x.title}</td><td className="text-green-600">{x.amount}</td><td><span className="text-[10px] bg-gray-100 px-2 py-1 rounded-full uppercase">{x.status}</span></td></tr>))}</tbody>
+</table>}
+</div>
+</div>
+</div>
+{m && <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+<div className="bg-white w-full max-w-sm rounded-3xl p-8 shadow-2xl border-t-8 border-yellow-500">
+<h2 className="text-lg font-bold mb-4">NEW TRADE</h2>
+<form onSubmit={add} className="space-y-3">
+<input placeholder="Title" className="w-full p-3 bg-gray-50 rounded-xl" value={f.title} onChange={(e)=>setF({...f,title:e.target.value})} required />
+<input placeholder="Amount" className="w-full p-3 bg-gray-50 rounded-xl" value={f.amount} onChange={(e)=>setF({...f,amount:e.target.value})} required />
+<div className="flex justify-end gap-2 pt-4">
+<button type="button" onClick={()=>setM(false)} className="text-gray-400 font-bold px-4">CANCEL</button>
+<button type="submit" className="bg-blue-900 text-yellow-500 px-6 py-2 rounded-xl font-bold">PUBLISH</button>
+</div>
+</form>
+</div>
+</div>}
+</div>);
 }
