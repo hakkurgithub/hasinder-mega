@@ -10,11 +10,9 @@ export default function P(){
 const [t,setT]=useState([]);
 const get=async()=>{const {data}=await sb.from('trades').select('*');if(data)setT(data);};
 useEffect(()=>{get();},[]);
-
-return(<div style={{padding:'20px',fontFamily:'sans-serif'}}>
-<h1>TIB HUB v7.0</h1>
-<button onClick={async()=>{await sb.from('trades').insert([{title:'Test Trade',amount:'100',status:'AKTIF'}]);get();}} style={{padding:'10px',background:'#1B365D',color:'#D4AF37',fontWeight:'bold'}}>+ QUICK TEST TRADE</button>
-<hr/>
-{t.map(x=>(<div key={x.id} style={{borderBottom:'1px solid #ccc',padding:'10px'}}><b>{x.title}</b> - {x.amount} - {x.status}</div>))}
-</div>);
-}
+const add=async()=>{await sb.from('trades').insert([{title:'ICRAAT TESTI',amount:'1.000 TL',status:'OK'}]);get();};
+return(<div style={{padding:'50px',textAlign:'center'}}>
+<h1 style={{color:'#1B365D'}}>TIB AG ICRAAT MERKEZI v7.1</h1>
+<button onClick={add} style={{padding:'20px',background:'#1B365D',color:'#D4AF37',fontWeight:'bold',borderRadius:'15px'}}>ILAN EKLE VE TEST ET</button>
+<div style={{marginTop:'30px'}}>{t.map(x=><div key={x.id}>{x.title} - {x.amount}</div>)}</div>
+</div>);}
