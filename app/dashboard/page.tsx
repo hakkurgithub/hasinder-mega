@@ -8,6 +8,15 @@ const sb=createClient(S_URL,S_KEY);
 
 export default function D(){
 const [t,setT]=useState([]);
-const get=async()=>{const {data}=await sb.from('trades').select('*');if(data)setT(data);};
+const get=async()=>{const {data}=await sb.from('trades').select('*').order('created_at',{ascending:false});if(data)setT(data);};
 useEffect(()=>{get();},[]);
-return(<div style={{padding:'40px',textAlign:'center'}}><h1 style={{color:'#1B365D'}}>TIB DASHBOARD v8.0</h1><button onClick={async()=>{await sb.from('trades').insert([{title:'YENI ICRAAT',amount:'500.000 TL',status:'OK'}]);get();}} style={{padding:'15px',background:'#1B365D',color:'#D4AF37',fontWeight:'bold',borderRadius:'10px'}}>+ HIZLI ILAN EKLE</button><hr/><div style={{marginTop:'20px'}}>{t.map(x=><div key={x.id} style={{borderBottom:'1px solid #eee',padding:'10px'}}><b>{x.title}</b> - {x.amount}</div>)}</div></div>);}
+const add=async()=>{await sb.from('trades').insert([{title:'YENI ICRAAT TESTI',amount:'750.000 TL',status:'OK'}]);get();};
+return(<div style={{padding:'50px',textAlign:'center',fontFamily:'sans-serif'}}>
+<h1 style={{color:'#1B365D'}}>TIB DASHBOARD v8.0</h1>
+<p>Fabrika artik calisiyor. Yeni rota aktif.</p>
+<button onClick={add} style={{padding:'20px',background:'#1B365D',color:'#D4AF37',fontWeight:'bold',borderRadius:'15px',cursor:'pointer'}}>+ HIZLI ILAN EKLE</button>
+<hr style={{margin:'30px 0'}}/>
+<div style={{display:'flex',flexDirection:'column',gap:'10px'}}>
+{t.map(x=><div key={x.id} style={{background:'#fff',padding:'15px',borderRadius:'10px',boxShadow:'0 2px 5px rgba(0,0,0,0.1)'}}><b>{x.title}</b> - {x.amount} - <small>{x.status}</small></div>)}
+</div>
+</div>);}
