@@ -3,69 +3,72 @@ generator client {
 }
 
 datasource db {
-  provider   = "postgresql"
-  url        = env("DATABASE_URL")
-  directUrl  = env("DIRECT_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
-  id        String   @id @default(cuid())
-  name      String
-  taxNo     String   @unique
-  sector    String
-  role      String
-  email     String   @unique
-  password  String
-  balance   Float    @default(0.0)
-
-  status    String   @default("ONAY_BEKLIYOR")
-  tier      String   @default("STANDART")
-  isAdmin   Boolean  @default(false)
-
-  // Profil alanları
-  iban      String?
-  phone     String?
-
-  createdAt DateTime @default(now())
-
-  demands     Demand[]    @relation("DemandCreator")
-  mediations  Mediation[] @relation("Mediator")
-  sales       Mediation[] @relation("Seller")
+  id                                   String      @id @default(cuid())
+  name                                 String
+  taxNo                                String      @unique
+  sector                               String
+  role                                 String
+  email                                String      @unique
+  password                             String
+  balance                              Float       @default(0.0)
+  createdAt                            DateTime    @default(now())
+  isAdmin                              Boolean     @default(false)
+  status                               String      @default("ONAY_BEKLIYOR")
+  tier                                 String      @default("STANDART")
+  iban                                 String?
+  phone                                String?
+  Demand                               Demand[]
+  Mediation_Mediation_mediatorIdToUser Mediation[] @relation("Mediation_mediatorIdToUser")
+  Mediation_Mediation_sellerIdToUser   Mediation[] @relation("Mediation_sellerIdToUser")
 }
 
 model Demand {
-  id        String   @id @default(cuid())
-  title     String
-  amount    String
-  sector    String
-  status    String   @default("ACIK")
-  creatorId String
-  creator   User     @relation("DemandCreator", fields: [creatorId], references: [id])
-  createdAt DateTime @default(now())
-
+  id         String      @id @default(cuid())
+  title      String
+  amount     String
+  sector     String
+  status     String      @default("ACIK")
+  creatorId  String
+  createdAt  DateTime    @default(now())
+  User       User        @relation(fields: [creatorId], references: [id])
   mediations Mediation[]
 }
 
 model Mediation {
-  id               String   @id @default(cuid())
-  demandId         String
-  demand           Demand   @relation(fields: [demandId], references: [id])
-  mediatorId       String
-  mediator         User     @relation("Mediator", fields: [mediatorId], references: [id])
-  sellerId         String
-  seller           User     @relation("Seller", fields: [sellerId], references: [id])
-  status           String   @default("BEKLEMEDE")
-  commissionAmount Float    @default(0.0)
-  createdAt        DateTime @default(now())
+  id                              String   @id @default(cuid())
+  demandId                        String
+  mediatorId                      String
+  sellerId                        String
+  status                          String   @default("BEKLEMEDE")
+  commissionAmount                Float    @default(0.0)
+  createdAt                       DateTime @default(now())
+  demand                          Demand   @relation(fields: [demandId], references: [id])
+  User_Mediation_mediatorIdToUser User     @relation("Mediation_mediatorIdToUser", fields: [mediatorId], references: [id])
+  User_Mediation_sellerIdToUser   User     @relation("Mediation_sellerIdToUser", fields: [sellerId], references: [id])
 }
 
 model LogisticsRoute {
-  id           String   @id @default(cuid())
-  origin       String
-  destination  String
-  vehicleType  String
-  capacity     String
-  targetPrice  Float?
-  status       String   @default("AKTIF")
-  createdAt    DateTime @default(now())
+  id          String   @id @default(cuid())
+  origin      String
+  destination String
+  vehicleType String
+  capacity    String
+  targetPrice Float?
+  status      String   @default("AKTIF")
+  createdAt   DateTime @default(now())
+}
+
+model Trade {
+  id        String    @id @default(cuid())
+  category  String
+  title     String
+  amount    String
+  status    String?   @default("AKTIF")
+  createdAt DateTime? @default(now()) @db.Timestamp(6)
 }
