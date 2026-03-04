@@ -1,21 +1,22 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import jwt from 'jsonwebtoken';
 
-export function middleware(request: NextRequest) {
-  // Admin sayfaları için kontrol
-  if (request.nextUrl.pathname.startsWith('/admin')) {
-    // Login sayfasına izin ver
-    if (request.nextUrl.pathname === '/admin/login' || request.nextUrl.pathname === '/admin') {
-      return NextResponse.next();
+export function middleware(req: NextRequest) {
+  const token = req.cookies.get('auth_token')?.value;
+  if (!token) return NextResponse.redirect(new URL('/login', req.url));
+
+  try {
+    const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
+    if (!decoded.isAdmin) {
+      return NextResponse.redirect(new URL('/login', req.url));
     }
-    
-    // Diğer admin sayfaları için auth kontrolü (client-side)
-    // Not: Gerçek projelerde server-side JWT kullanın
+    return NextResponse.next();
+  } catch (err) {
+    return NextResponse.redirect(new URL('/login', req.url));
   }
-  
-  return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/admin/:path*'],
+  matcher: ['/panel/:path*'],
 };

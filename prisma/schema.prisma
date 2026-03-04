@@ -72,3 +72,31 @@ model Trade {
   status    String?   @default("AKTIF")
   createdAt DateTime? @default(now()) @db.Timestamp(6)
 }
+
+model AdminLog {
+  id        String   @id @default(cuid())
+  action    String   // yapılan işlem (ör. "User oluşturuldu", "Trade silindi")
+  details   String?  // ek açıklama
+  createdAt DateTime @default(now())
+  adminId   String   // işlemi yapan admin
+  Admin     User     @relation(fields: [adminId], references: [id])
+}
+
+
+model AdminLog {
+  id        String   @id @default(cuid())
+  action    String
+  details   String?
+  createdAt DateTime @default(now())
+  adminId   String
+  Admin     User     @relation(fields: [adminId], references: [id])
+}
+
+model AdminLog {
+  id        String   @id @default(cuid())
+  action    String
+  details   String?
+  createdAt DateTime @default(now())
+  adminId   String
+  Admin     User     @relation(fields: [adminId], references: [id])
+}
