@@ -8,19 +8,19 @@ datasource db {
 }
 
 model User {
-  id        String    @id @default(uuid())
-  name      String
-  taxNo     String
-  sector    String
-  role      String
-  email     String    @unique
-  password  String
-  balance   Float     @default(0)
-  isAdmin   Boolean   @default(false)
-  status    String
-  tier      String
-  createdAt DateTime  @default(now())
-  AdminLogs AdminLog[]
+  id          String   @id @default(uuid())
+  name        String
+  taxNo       String
+  sector      String
+  title       String
+  email       String   @unique
+  password    String
+  balance     Float    @default(0)
+  isAdmin     Boolean  @default(false)
+  status      String
+  tier        String
+  createdAt   DateTime @default(now())
+  AdminLogs   AdminLog[]
 }
 
 model AdminLog {
