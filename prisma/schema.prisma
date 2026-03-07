@@ -12,13 +12,13 @@ model User {
   name        String
   taxNo       String
   sector      String
-  title       String
+  role        String   @default("UYELIK_BEKLIYOR")
   email       String   @unique
   password    String
   balance     Float    @default(0)
   isAdmin     Boolean  @default(false)
-  status      String
-  tier        String
+  status      String   @default("PENDING")
+  tier        String   @default("STANDARD")
   createdAt   DateTime @default(now())
   AdminLogs   AdminLog[]
 }
@@ -30,4 +30,25 @@ model AdminLog {
   createdAt DateTime @default(now())
   adminId   String
   Admin     User     @relation(fields: [adminId], references: [id])
+}
+
+model Haber {
+  id        String   @id @default(cuid())
+  baslik    String
+  icerik    String   @db.Text
+  resim     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Trade {
+  id         String   @id @default(cuid())
+  category   String
+  title      String
+  amount     String
+  status     String   @default("AKTIF")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt
+
+  @@map("trades")
 }
