@@ -1,7 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 
-// Haber yapisini tanımlayarak TypeScript'i sakinleştiriyoruz
 interface Haber {
   id: string;
   title: string;
@@ -16,11 +15,12 @@ export default function HaberlerPage() {
     const fetchHaberler = async () => {
       try {
         const res = await fetch('/api/haberler');
+        if (!res.ok) throw new Error('Haberler alinamadi');
         const data = await res.json();
-        // Artik TypeScript 'data'nın 'Haber[]' olabileceğini biliyor
         setHaberler(Array.isArray(data) ? data : []);
       } catch (err) {
         setMessage('Haberler yuklenemedi');
+        console.error(err);
       }
     };
     fetchHaberler();
@@ -28,9 +28,15 @@ export default function HaberlerPage() {
 
   return (
     <div style={{padding:'20px', background:'#0f172a', minHeight:'100vh', color:'#fff'}}>
-      <h1>Haber Yonetimi</h1>
-      {message && <p>{message}</p>}
-      <div>{haberler.map(h => <div key={h.id}>{h.title}</div>)}</div>
+      <h1 style={{color:'#fbbf24'}}>Haber Yonetimi</h1>
+      {message && <p style={{color:'red'}}>{message}</p>}
+      <div style={{marginTop:'20px'}}>
+        {haberler.map((h) => (
+          <div key={h.id} style={{padding:'10px', borderBottom:'1px solid #334155'}}>
+            <h3>{h.title}</h3>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
