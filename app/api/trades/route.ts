@@ -1,39 +1,40 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
 export async function GET() {
   try {
-    const haberler = await prisma.haber.findMany({
+    const trades = await prisma.trade.findMany({
       orderBy: { createdAt: 'desc' }
     });
     
-    return NextResponse.json(haberler);
+    return NextResponse.json(trades);
   } catch (error) {
     console.error('API Hatası:', error);
     return NextResponse.json({ 
-      error: 'Haberler yüklenemedi',
+      error: 'Trades yüklenemedi',
       details: error instanceof Error ? error.message : 'Bilinmeyen hata'
     }, { status: 500 });
   }
 }
 
-export async function POST(request: NextRequest) {
+export async function POST(request: Request) {
   try {
-    const { baslik, icerik, resim } = await request.json();
+    const { category, title, amount, status } = await request.json();
     
-    const haber = await prisma.haber.create({
+    const trade = await prisma.trade.create({
       data: {
-        baslik,
-        icerik,
-        resim: resim || null
+        category,
+        title,
+        amount,
+        status: status || 'AKTIF'
       }
     });
     
-    return NextResponse.json({ message: 'Haber başarıyla eklendi', haber }, { status: 201 });
+    return NextResponse.json({ message: 'Trade başarıyla eklendi', trade }, { status: 201 });
   } catch (error) {
     console.error('API Hatası (POST):', error);
     return NextResponse.json({ 
-      error: 'Haber eklenemedi',
+      error: 'Trade eklenemedi',
       details: error instanceof Error ? error.message : 'Bilinmeyen hata'
     }, { status: 500 });
   }
