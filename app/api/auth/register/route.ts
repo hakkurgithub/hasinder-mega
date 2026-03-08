@@ -1,6 +1,11 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { createClient } from '@supabase/supabase-js';
 import bcrypt from 'bcryptjs';
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
 export async function POST(request: Request) {
   try {
@@ -12,9 +17,11 @@ export async function POST(request: Request) {
     }
 
     // Email kontrolu
-    const existingUser = await prisma.user.findUnique({
-      where: { email }
-    });
+    const { data: existingUser } = await supabase
+      .from('User')
+      .select('id')
+      .eq('email', email)
+      .single();
 
     if (existingUser) {
       return NextResponse.json({ error: 'Bu e-posta adresi zaten kayitli.' }, { status: 400 });
@@ -24,8 +31,9 @@ export async function POST(request: Request) {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Kullanici olusturma
-    const user = await prisma.user.create({
-      data: {
+    const { data: user, error } = await supabase
+      .from('User')
+      .insert({
         name,
         taxNo,
         sector,
@@ -33,9 +41,17 @@ export async function POST(request: Request) {
         email,
         password: hashedPassword,
         status: 'PENDING',
-        tier: 'STANDARD'
-      }
-    });
+        tier: 'STANDARD',
+        balance: 0,
+        isAdmin: false
+      })
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Supabase insert error:', error);
+      return NextResponse.json({ error: 'Kayit sirasinda bir hata olustu: ' + error.message }, { status: 500 });
+    }
 
     return NextResponse.json({ 
       success: true, 

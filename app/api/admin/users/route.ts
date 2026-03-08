@@ -1,19 +1,59 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-import { sendEmail } from '@/lib/mailer';
+import { createClient } from '@supabase/supabase-js';
 
-const prisma = new PrismaClient();
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
 export async function GET() {
   try {
-    const pendingUsers = await prisma.user.findMany({
-      where: { status: 'ONAY_BEKLIYOR' },
-      orderBy: { createdAt: 'desc' }
-    });
-    return NextResponse.json(pendingUsers, { status: 200 });
-  } catch (error: any) {
-    return NextResponse.json({ error: 'Kullanıcılar çekilemedi.' }, { status: 500 });
+    const { data: users, error } = await supabase
+      .from('User')
+      .select('*')
+      .order('createdAt', { ascending: false });
+
+    if (error) {
+      console.error('Supabase error:', error);
+      return NextResponse.json({ error: 'Kullanicilar cekilemedi.' }, { status: 500 });
+    }
+
+    return NextResponse.json({ users }, { status: 200 });
+  } catch (error: unknown) {
+    console.error('API error:', error);
+    return NextResponse.json({ error: 'Kullanicilar cekilemedi.' }, { status: 500 });
   }
+}
+
+export async function PUT(request: Request) {
+  try {
+    const { userId, status, action } = await request.json();
+    
+    if (!userId) {
+      return NextResponse.json({ error: 'Eksik veri.' }, { status: 400 });
+    }
+
+    // action veya status parametresini kabul et
+    const newStatus = status || (action === 'APPROVE' ? 'APPROVED' : 'REJECTED');
+    
+    const { data: updatedUser, error } = await supabase
+      .from('User')
+      .update({ status: newStatus })
+      .eq('id', userId)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Supabase update error:', error);
+      return NextResponse.json({ error: 'Islem basarisiz.' }, { status: 500 });
+    }
+
+    return NextResponse.json({ success: true, user: updatedUser }, { status: 200 });
+  } catch (error: unknown) {
+    console.error('API error:', error);
+    return NextResponse.json({ error: 'Islem basarisiz.' }, { status: 500 });
+  }
+}
 }
 
 export async function PUT(request: Request) {
