@@ -23,6 +23,8 @@ model User {
   AdminLogs   AdminLog[]
   Mediations  Mediation[]
   Demands     Demand[]
+  Trades      Trade[]
+  Orders      Order[]
 }
 
 model Demand {
@@ -54,4 +56,33 @@ model Mediation {
   mediatorId String
   demandId  String?
   mediator  User     @relation(fields: [mediatorId], references: [id])
+}
+
+model Trade {
+  id          String   @id @default(uuid())
+  type        String   // BUY veya SELL
+  symbol      String   // Örn: AAPL, BTC
+  quantity    Float
+  price       Float
+  total       Float
+  status      String   @default("PENDING") // PENDING, COMPLETED, CANCELLED
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+model Order {
+  id          String   @id @default(uuid())
+  type        String   // LIMIT, MARKET
+  side        String   // BUY, SELL
+  symbol      String
+  quantity    Float
+  price       Float?
+  filledQty   Float    @default(0)
+  status      String   @default("OPEN") // OPEN, FILLED, PARTIALLY_FILLED, CANCELLED
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
 }
