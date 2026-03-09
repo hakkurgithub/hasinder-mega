@@ -15,20 +15,30 @@ export default function AuthPage() {
     e.preventDefault();
     setLoading(true); setStatus(null);
     try {
+      console.log('[v0] Register form data:', formData);
       const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({
+          name: formData.name,
+          taxNo: formData.taxNo,
+          sector: formData.sector,
+          role: formData.role,
+          email: formData.email,
+          password: formData.password
+        })
       });
       const data = await res.json();
+      console.log('[v0] Register response:', data);
       if (res.ok) {
         setStatus({ type: 'success', text: data.message });
-        setFormData({ name: '', taxNo: '', sector: '', role: '', email: '', password: '' }); // Formu temizle
+        setFormData({ name: '', taxNo: '', sector: '', role: '', email: '', password: '' });
       } else {
-        setStatus({ type: 'error', text: '❌ ' + data.error });
+        setStatus({ type: 'error', text: data.error });
       }
     } catch (err) {
-      setStatus({ type: 'error', text: '❌ Sistemsel bir hata oluştu.' });
+      console.error('[v0] Register error:', err);
+      setStatus({ type: 'error', text: 'Sistemsel bir hata olustu.' });
     }
     setLoading(false);
   };
@@ -54,7 +64,36 @@ export default function AuthPage() {
           </div>
 
           {activeTab === 'login' && (
-            <form className="space-y-6" onSubmit={async (e) => { e.preventDefault(); setLoading(true); setStatus(null); try { const res = await fetch('/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: formData.email, password: formData.password }) }); const data = await res.json(); if (res.ok) { localStorage.setItem('tib_user', JSON.stringify(data.user)); window.location.href = '/panel'; } else { setStatus({ type: 'error', text: '❌ ' + data.error }); } } catch (err) { setStatus({ type: 'error', text: '❌ Giriş yapılamadı.' }); } setLoading(false); }}>
+            <form className="space-y-6" onSubmit={async (e) => { 
+              e.preventDefault(); 
+              setLoading(true); 
+              setStatus(null); 
+              try { 
+                console.log('[v0] Login attempt:', formData.email);
+                const res = await fetch('/api/auth/login', { 
+                  method: 'POST', 
+                  headers: { 'Content-Type': 'application/json' }, 
+                  body: JSON.stringify({ email: formData.email, password: formData.password }) 
+                }); 
+                const data = await res.json(); 
+                console.log('[v0] Login response:', data);
+                if (res.ok) { 
+                  localStorage.setItem('tib_user', JSON.stringify(data.user)); 
+                  // Admin ise admin paneline, degilse normal panele yonlendir
+                  if (data.user.isAdmin || data.user.email === 'kurt.hakki@gmail.com') {
+                    window.location.href = '/admin';
+                  } else {
+                    window.location.href = '/panel'; 
+                  }
+                } else { 
+                  setStatus({ type: 'error', text: data.error }); 
+                } 
+              } catch (err) { 
+                console.error('[v0] Login error:', err);
+                setStatus({ type: 'error', text: 'Giris yapilamadi.' }); 
+              } 
+              setLoading(false); 
+            }}>
               {status && activeTab === 'login' && <div className="p-4 rounded-lg text-sm font-bold bg-red-100 text-red-800 border border-red-200 mb-4">{status.text}</div>}
               <div>
                 <label className="block text-sm font-medium text-gray-700">Resmi E-posta Adresi</label>

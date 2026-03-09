@@ -14,9 +14,13 @@ export async function POST(request: Request) {
     // User tablosundan kullaniciyi bul
     const { data: user, error } = await supabase
       .from('User')
-      .select('id, name, email, password, isAdmin, sector, balance')
+      .select('id, name, email, password, isAdmin, sector, balance, status, title')
       .eq('email', email)
       .single();
+
+    console.log('[v0] Login attempt for:', email);
+    console.log('[v0] User found:', user ? 'Yes' : 'No');
+    console.log('[v0] Query error:', error);
 
     if (error || !user) {
       return NextResponse.json({ error: 'Gecersiz e-posta veya sifre.' }, { status: 401 });
@@ -24,12 +28,30 @@ export async function POST(request: Request) {
 
     // Basit sifre kontrolu (uretimde hash kullanilmali)
     if (user.password !== password) {
+      console.log('[v0] Password mismatch');
       return NextResponse.json({ error: 'Gecersiz e-posta veya sifre.' }, { status: 401 });
+    }
+
+    // Hesap durumu kontrolu
+    if (user.status === 'ONAY_BEKLIYOR') {
+      return NextResponse.json({ error: 'Hesabiniz henuz onaylanmadi. Lutfen yonetici onayini bekleyin.' }, { status: 403 });
+    }
+
+    if (user.status === 'ENGELLI' || user.status === 'BANNED') {
+      return NextResponse.json({ error: 'Hesabiniz askiya alinmistir.' }, { status: 403 });
     }
 
     return NextResponse.json({ 
       success: true, 
-      user: { id: user.id, name: user.name, isAdmin: user.isAdmin, sector: user.sector, balance: user.balance } 
+      user: { 
+        id: user.id, 
+        name: user.name, 
+        email: user.email,
+        isAdmin: user.isAdmin, 
+        sector: user.sector, 
+        balance: user.balance,
+        role: user.title
+      } 
     }, { status: 200 });
 
   } catch (error: unknown) {
