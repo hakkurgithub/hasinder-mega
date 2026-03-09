@@ -1,7 +1,5 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { createClient } from '@/lib/supabase/server';
 
 export async function POST(request: Request) {
   try {
@@ -11,18 +9,26 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'E-posta ve şifre zorunludur.' }, { status: 400 });
     }
 
-    const user = await prisma.user.findUnique({
-      where: { email }
-    });
+    const supabase = await createClient();
+    
+    const { data: users, error: queryError } = await supabase
+      .from('User')
+      .select('id, name, role, sector, balance, password')
+      .eq('email', email)
+      .single();
+
+    if (queryError || !users) {
+      return NextResponse.json({ error: 'Geçersiz e-posta veya şifre.' }, { status: 401 });
+    }
 
     // Basit doğrulama (Canlıda şifreler hash'li karşılaştırılacak)
-    if (!user || user.password !== password) {
+    if (users.password !== password) {
       return NextResponse.json({ error: 'Geçersiz e-posta veya şifre.' }, { status: 401 });
     }
 
     return NextResponse.json({ 
       success: true, 
-      user: { id: user.id, name: user.name, role: user.role, sector: user.sector, balance: user.balance } 
+      user: { id: users.id, name: users.name, role: users.role, sector: users.sector, balance: users.balance } 
     }, { status: 200 });
 
   } catch (error: any) {
