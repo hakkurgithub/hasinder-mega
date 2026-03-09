@@ -21,6 +21,19 @@ model User {
   tier        String
   createdAt   DateTime @default(now())
   AdminLogs   AdminLog[]
+  Mediations  Mediation[]
+  Demands     Demand[]
+}
+
+model Demand {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  status      String   @default("ACIK")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
 }
 
 model AdminLog {
