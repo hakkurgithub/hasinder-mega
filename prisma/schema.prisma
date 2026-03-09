@@ -31,3 +31,14 @@ model AdminLog {
   adminId   String
   Admin     User     @relation(fields: [adminId], references: [id])
 }
+
+model Mediation {
+  id        String   @id @default(uuid())
+  title     String
+  status    String   @default("BEKLEMEDE")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  mediatorId String
+  demandId  String?
+  mediator  User     @relation(fields: [mediatorId], references: [id])
+}
