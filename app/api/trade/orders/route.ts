@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { createClient } from '@/lib/supabase/server';
 
-// Kullanıcının emirlerini getir
+// Kullanicinin emirlerini getir
 export async function GET(request: Request) {
   try {
+    const supabase = await createClient();
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get('userId');
 
@@ -11,11 +12,13 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'userId gereklidir.' }, { status: 400 });
     }
 
-    const orders = await prisma.order.findMany({
-      where: { userId },
-      orderBy: { createdAt: 'desc' }
-    });
+    const { data: orders, error } = await supabase
+      .from('Order')
+      .select('*')
+      .eq('userId', userId)
+      .order('createdAt', { ascending: false });
 
+    if (error) throw error;
     return NextResponse.json(orders, { status: 200 });
   } catch (error) {
     console.error('Orders GET Error:', error);
@@ -23,9 +26,10 @@ export async function GET(request: Request) {
   }
 }
 
-// Yeni emir oluştur
+// Yeni emir olustur
 export async function POST(request: Request) {
   try {
+    const supabase = await createClient();
     const body = await request.json();
     const { userId, type, side, symbol, quantity, price } = body;
 
@@ -36,8 +40,9 @@ export async function POST(request: Request) {
       );
     }
 
-    const order = await prisma.order.create({
-      data: {
+    const { data: order, error } = await supabase
+      .from('Order')
+      .insert({
         type,
         side,
         symbol,
@@ -45,22 +50,26 @@ export async function POST(request: Request) {
         price: price || null,
         status: 'OPEN',
         userId
-      }
-    });
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
 
     return NextResponse.json({ 
-      message: 'Emir oluşturuldu.',
+      message: 'Emir olusturuldu.',
       order 
     }, { status: 201 });
   } catch (error) {
     console.error('Orders POST Error:', error);
-    return NextResponse.json({ error: 'Emir oluşturulamadı.' }, { status: 500 });
+    return NextResponse.json({ error: 'Emir olusturulamadi.' }, { status: 500 });
   }
 }
 
 // Emir iptal et
 export async function DELETE(request: Request) {
   try {
+    const supabase = await createClient();
     const { searchParams } = new URL(request.url);
     const orderId = searchParams.get('orderId');
 
@@ -68,10 +77,14 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: 'orderId gereklidir.' }, { status: 400 });
     }
 
-    const order = await prisma.order.update({
-      where: { id: orderId },
-      data: { status: 'CANCELLED' }
-    });
+    const { data: order, error } = await supabase
+      .from('Order')
+      .update({ status: 'CANCELLED' })
+      .eq('id', orderId)
+      .select()
+      .single();
+
+    if (error) throw error;
 
     return NextResponse.json({ 
       message: 'Emir iptal edildi.',

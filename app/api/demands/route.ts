@@ -1,17 +1,16 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { createClient } from '@/lib/supabase/server';
 
 // Tum talepleri listeleme
 export async function GET() {
   try {
-    const demands = await prisma.demand.findMany({
-      orderBy: { createdAt: 'desc' },
-      include: {
-        user: {
-          select: { name: true, sector: true }
-        }
-      }
-    });
+    const supabase = await createClient();
+    const { data: demands, error } = await supabase
+      .from('Demand')
+      .select('*, User(name, sector)')
+      .order('createdAt', { ascending: false });
+
+    if (error) throw error;
     return NextResponse.json(demands, { status: 200 });
   } catch (error: unknown) {
     console.error('Demands GET error:', error);
@@ -22,6 +21,7 @@ export async function GET() {
 // Yeni talep olusturma
 export async function POST(request: Request) {
   try {
+    const supabase = await createClient();
     const body = await request.json();
     const { title, description, userId } = body;
 
@@ -29,10 +29,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Baslik ve kullanici ID zorunludur.' }, { status: 400 });
     }
 
-    const newDemand = await prisma.demand.create({
-      data: { title, description, userId }
-    });
+    const { data: newDemand, error } = await supabase
+      .from('Demand')
+      .insert({ title, description, userId })
+      .select()
+      .single();
 
+    if (error) throw error;
     return NextResponse.json({ success: true, demand: newDemand }, { status: 201 });
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Bilinmeyen hata';

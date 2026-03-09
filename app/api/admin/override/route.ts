@@ -1,24 +1,24 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { createClient } from '@/lib/supabase/server';
 
 export async function POST(request: Request) {
   try {
+    const supabase = await createClient();
     const { targetUserId, action, adminSecret } = await request.json();
 
-    // Sadece Başkanın (Admin) bildiği özel doğrulama
+    // Sadece Baskanin (Admin) bildigi ozel dogrulama
     if (adminSecret !== process.env.ADMIN_SECRET) {
-      return NextResponse.json({ error: 'Yetkisiz erişim! Bu işlem kaydedildi.' }, { status: 403 });
+      return NextResponse.json({ error: 'Yetkisiz erisim! Bu islem kaydedildi.' }, { status: 403 });
     }
 
-    // Hücrelere Müdahale (Full Override)
+    // Hucrelere Mudahale (Full Override)
     if (action === 'BAN_USER') {
-      await prisma.user.update({ where: { id: targetUserId }, data: { status: 'BANNED' } });
-    } else if (action === 'RESET_SCORE') {
-      await prisma.user.update({ where: { id: targetUserId }, data: { trustScore: 100 } });
+      await supabase.from('User').update({ status: 'BANNED' }).eq('id', targetUserId);
     }
 
-    return NextResponse.json({ success: true, message: 'Başkan müdahalesi başarıyla uygulandı.' });
+    return NextResponse.json({ success: true, message: 'Baskan mudahalesi basariyla uygulandi.' });
   } catch (error) {
-    return NextResponse.json({ error: 'Müdahale başarısız.' }, { status: 500 });
+    console.error('Admin override error:', error);
+    return NextResponse.json({ error: 'Mudahale basarisiz.' }, { status: 500 });
   }
 }

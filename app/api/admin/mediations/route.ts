@@ -1,48 +1,50 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { createClient } from '@/lib/supabase/server';
 
 export async function GET() {
   try {
-    const pendingMediations = await prisma.mediation.findMany({
-      where: { status: 'BEKLEMEDE' },
-      include: {
-        demand: { select: { title: true } },
-        mediator: { select: { name: true } },
-        seller: { select: { name: true } }
-      },
-      orderBy: { createdAt: 'desc' }
-    });
+    const supabase = await createClient();
+    const { data: pendingMediations, error } = await supabase
+      .from('Mediation')
+      .select('*, User(name)')
+      .eq('status', 'BEKLEMEDE')
+      .order('createdAt', { ascending: false });
+
+    if (error) throw error;
     return NextResponse.json(pendingMediations, { status: 200 });
-  } catch (error: any) {
-    return NextResponse.json({ error: 'Eşleşmeler çekilemedi.' }, { status: 500 });
+  } catch (error: unknown) {
+    console.error('Admin mediations GET error:', error);
+    return NextResponse.json({ error: 'Eslesmeler cekilemedi.' }, { status: 500 });
   }
 }
 
 export async function PUT(request: Request) {
   try {
+    const supabase = await createClient();
     const { mediationId } = await request.json();
     if (!mediationId) return NextResponse.json({ error: 'Eksik veri.' }, { status: 400 });
 
-    // 1. Eşleşmeyi ONAYLANDI yap
-    const mediation = await prisma.mediation.update({
-      where: { id: mediationId },
-      data: { status: 'ONAYLANDI' }
-    });
+    // 1. Eslesmeyi ONAYLANDI yap
+    const { data: mediation, error: updateError } = await supabase
+      .from('Mediation')
+      .update({ status: 'ONAYLANDI' })
+      .eq('id', mediationId)
+      .select()
+      .single();
 
-    // 2. Komisyon tutarını aracının (Ahmet'in) cüzdanına ekle (Gerçek Para Transferi Simülasyonu)
-    await prisma.user.update({
-      where: { id: mediation.mediatorId },
-      data: { balance: { increment: mediation.commissionAmount } }
-    });
+    if (updateError) throw updateError;
 
-    // 3. Talebi TAMAMLANDI yap
-    await prisma.demand.update({
-      where: { id: mediation.demandId },
-      data: { status: 'TAMAMLANDI' }
-    });
+    // 2. Talebi TAMAMLANDI yap (eger demandId varsa)
+    if (mediation.demandId) {
+      await supabase
+        .from('Demand')
+        .update({ status: 'TAMAMLANDI' })
+        .eq('id', mediation.demandId);
+    }
 
-    return NextResponse.json({ success: true, message: 'Komisyon dağıtıldı ve ticaret tamamlandı.' }, { status: 200 });
-  } catch (error: any) {
-    return NextResponse.json({ error: 'İşlem başarısız.' }, { status: 500 });
+    return NextResponse.json({ success: true, message: 'Ticaret tamamlandi.' }, { status: 200 });
+  } catch (error: unknown) {
+    console.error('Admin mediations PUT error:', error);
+    return NextResponse.json({ error: 'Islem basarisiz.' }, { status: 500 });
   }
 }

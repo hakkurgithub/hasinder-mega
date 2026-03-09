@@ -1,23 +1,26 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { createClient } from '@/lib/supabase/server';
 
 export async function POST(request: Request) {
   try {
+    const supabase = await createClient();
     const { userId } = await request.json();
     
-    // Robotik Sorgu: Üyenin geçmişini tara
-    const stats = await prisma.mediation.findMany({
-      where: { mediatorId: userId }
-    });
+    const { data: stats, error } = await supabase
+      .from('Mediation')
+      .select('status')
+      .eq('mediatorId', userId);
 
-    // Puan hesaplama simülasyonu
-    const completed = stats.filter(s => s.status === 'TAMAMLANDI').length;
+    if (error) throw error;
+
+    const completed = (stats || []).filter((s: { status: string }) => s.status === 'TAMAMLANDI').length;
     
     return NextResponse.json({
       score: 50 + (completed * 5),
       level: completed > 10 ? 'GOLD' : 'STANDART'
     });
   } catch (error) {
-    return NextResponse.json({ error: 'Güven skoru hesaplanamadı.' }, { status: 500 });
+    console.error('Trust score error:', error);
+    return NextResponse.json({ error: 'Guven skoru hesaplanamadi.' }, { status: 500 });
   }
 }

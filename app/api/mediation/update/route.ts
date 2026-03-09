@@ -1,20 +1,27 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { createClient } from '@/lib/supabase/server';
 
 export async function PUT(request: Request) {
   try {
+    const supabase = await createClient();
     const { mediationId, newStatus } = await request.json();
 
-    const mediation = await prisma.mediation.findUnique({
-      where: { id: mediationId }
-    });
+    const { data: mediation, error: findError } = await supabase
+      .from('Mediation')
+      .select('id')
+      .eq('id', mediationId)
+      .single();
 
-    if (!mediation) return NextResponse.json({ error: 'Islem bulunamadi.' }, { status: 404 });
+    if (findError || !mediation) return NextResponse.json({ error: 'Islem bulunamadi.' }, { status: 404 });
 
-    const updated = await prisma.mediation.update({
-      where: { id: mediationId },
-      data: { status: newStatus }
-    });
+    const { data: updated, error: updateError } = await supabase
+      .from('Mediation')
+      .update({ status: newStatus })
+      .eq('id', mediationId)
+      .select('status')
+      .single();
+
+    if (updateError) throw updateError;
 
     return NextResponse.json({ success: true, status: updated.status });
   } catch (error) {

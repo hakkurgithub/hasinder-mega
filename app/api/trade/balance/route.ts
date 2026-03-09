@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { createClient } from '@/lib/supabase/server';
 
-// Kullanıcı bakiyesi ve trade geçmişi
+// Kullanici bakiyesi ve trade gecmisi
 export async function GET(request: Request) {
   try {
+    const supabase = await createClient();
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get('userId');
 
@@ -11,28 +12,32 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'userId gereklidir.' }, { status: 400 });
     }
 
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: {
-        id: true,
-        name: true,
-        balance: true,
-        Trades: {
-          orderBy: { createdAt: 'desc' },
-          take: 10
-        }
-      }
-    });
+    // Kullanici bilgilerini cek
+    const { data: user, error: userError } = await supabase
+      .from('User')
+      .select('id, name, balance')
+      .eq('id', userId)
+      .single();
 
-    if (!user) {
-      return NextResponse.json({ error: 'Kullanıcı bulunamadı.' }, { status: 404 });
+    if (userError || !user) {
+      return NextResponse.json({ error: 'Kullanici bulunamadi.' }, { status: 404 });
     }
+
+    // Son 10 trade'i cek
+    const { data: trades, error: tradesError } = await supabase
+      .from('Trade')
+      .select('*')
+      .eq('userId', userId)
+      .order('createdAt', { ascending: false })
+      .limit(10);
+
+    if (tradesError) throw tradesError;
 
     return NextResponse.json({
       userId: user.id,
       name: user.name,
       balance: user.balance,
-      recentTrades: user.Trades
+      recentTrades: trades || []
     }, { status: 200 });
   } catch (error) {
     console.error('Balance GET Error:', error);

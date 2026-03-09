@@ -1,16 +1,26 @@
-import { prisma } from '@/lib/prisma';
+import { createClient } from '@/lib/supabase/server';
+
+interface Demand {
+  id: string;
+  title: string;
+  status: string;
+}
 
 export default async function Home() {
-  let latestDemands = [];
+  let latestDemands: Demand[] = [];
   let dbError = false;
 
   try {
-    // Veritabanı baglantisi varsa verileri cek
-    latestDemands = await prisma.demand.findMany({
-      where: { status: 'ACIK' },
-      orderBy: { createdAt: 'desc' },
-      take: 3,
-    });
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from('Demand')
+      .select('id, title, status')
+      .eq('status', 'ACIK')
+      .order('createdAt', { ascending: false })
+      .limit(3);
+    
+    if (error) throw error;
+    latestDemands = data || [];
   } catch (error) {
     console.error("Ana sayfa talepleri cekilemedi:", error);
     dbError = true;

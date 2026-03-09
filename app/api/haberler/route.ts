@@ -1,22 +1,14 @@
-import { autoClassify } from '@/lib/radar/sectorClassifier';
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
 
+// Haber tablosu henuz tanimli degil - gecici cozum
 export async function GET() {
   try {
-    console.log('API: Haberler getiriliyor...');
-    
-    const haberler = await prisma.haber.findMany({
-      orderBy: { createdAt: 'desc' }
-    });
-    
-    console.log('API: Bulunan haber sayısı:', haberler.length);
-    
-    return NextResponse.json(haberler);
+    // Simdilik bos liste don
+    return NextResponse.json([]);
   } catch (error) {
-    console.error('API Hatası:', error);
+    console.error('API Hatasi:', error);
     return NextResponse.json({ 
-      error: 'Haberler yüklenemedi',
+      error: 'Haberler yuklenemedi',
       details: error instanceof Error ? error.message : 'Bilinmeyen hata'
     }, { status: 500 });
   }
@@ -24,23 +16,12 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const { baslik, icerik, resim } = await request.json();
+    const { baslik } = await request.json();
     
-    console.log('API: Yeni haber ekleniyor:', { baslik });
-    
-    const haber = await prisma.haber.create({
-      data: {
-        baslik,
-        icerik,
-        resim: resim || null
-      }
-    });
-    
-    console.log('API: Haber eklendi:', haber.id);
-    
-    return NextResponse.json({ message: 'Haber başarıyla eklendi', haber }, { status: 201 });
+    // Haber tablosu tanimlaninca aktif edilecek
+    return NextResponse.json({ message: 'Haber basariyla eklendi (test modu)', baslik }, { status: 201 });
   } catch (error) {
-    console.error('API Hatası (POST):', error);
+    console.error('API Hatasi (POST):', error);
     return NextResponse.json({ 
       error: 'Haber eklenemedi',
       details: error instanceof Error ? error.message : 'Bilinmeyen hata'

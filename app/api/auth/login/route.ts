@@ -1,20 +1,29 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { createClient } from '@/lib/supabase/server';
 
 export async function POST(request: Request) {
   try {
     const { email, password } = await request.json();
 
     if (!email || !password) {
-      return NextResponse.json({ error: 'E-posta ve şifre zorunludur.' }, { status: 400 });
+      return NextResponse.json({ error: 'E-posta ve sifre zorunludur.' }, { status: 400 });
     }
 
-    const user = await prisma.user.findUnique({
-      where: { email }
-    });
+    const supabase = await createClient();
+    
+    // User tablosundan kullaniciyi bul
+    const { data: user, error } = await supabase
+      .from('User')
+      .select('id, name, email, password, isAdmin, sector, balance')
+      .eq('email', email)
+      .single();
 
-    // Basit dogrulama (Canlida sifreler hash'li karsilastirilacak)
-    if (!user || user.password !== password) {
+    if (error || !user) {
+      return NextResponse.json({ error: 'Gecersiz e-posta veya sifre.' }, { status: 401 });
+    }
+
+    // Basit sifre kontrolu (uretimde hash kullanilmali)
+    if (user.password !== password) {
       return NextResponse.json({ error: 'Gecersiz e-posta veya sifre.' }, { status: 401 });
     }
 

@@ -1,17 +1,19 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { createClient } from '@/lib/supabase/server';
 
 export async function POST(request: Request) {
   try {
+    const supabase = await createClient();
     const { userId } = await request.json();
     if (!userId) return NextResponse.json({ error: 'Kullanici ID eksik.' }, { status: 400 });
 
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { id: true, name: true, email: true, taxNo: true, sector: true, isAdmin: true, title: true }
-    });
+    const { data: user, error } = await supabase
+      .from('User')
+      .select('id, name, email, taxNo, sector, isAdmin, title')
+      .eq('id', userId)
+      .single();
 
-    if (!user) return NextResponse.json({ error: 'Kullanici bulunamadi.' }, { status: 404 });
+    if (error || !user) return NextResponse.json({ error: 'Kullanici bulunamadi.' }, { status: 404 });
     return NextResponse.json(user, { status: 200 });
   } catch (error: unknown) {
     console.error('Profile POST error:', error);
@@ -21,6 +23,7 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
   try {
+    const supabase = await createClient();
     const { userId, name, newPassword } = await request.json();
     if (!userId) return NextResponse.json({ error: 'Eksik veri.' }, { status: 400 });
 
@@ -28,11 +31,14 @@ export async function PUT(request: Request) {
     if (name !== undefined) updateData.name = name;
     if (newPassword) updateData.password = newPassword;
 
-    const updatedUser = await prisma.user.update({
-      where: { id: userId },
-      data: updateData,
-      select: { id: true, name: true, email: true }
-    });
+    const { data: updatedUser, error } = await supabase
+      .from('User')
+      .update(updateData)
+      .eq('id', userId)
+      .select('id, name, email')
+      .single();
+
+    if (error) throw error;
 
     return NextResponse.json({ success: true, message: 'Profil basariyla guncellendi.', user: updatedUser }, { status: 200 });
   } catch (error: unknown) {
