@@ -18,17 +18,12 @@ export async function POST(request: Request) {
       .eq('email', email)
       .single();
 
-    console.log('[v0] Login attempt for:', email);
-    console.log('[v0] User found:', user ? 'Yes' : 'No');
-    console.log('[v0] Query error:', error);
-
     if (error || !user) {
       return NextResponse.json({ error: 'Gecersiz e-posta veya sifre.' }, { status: 401 });
     }
 
     // Basit sifre kontrolu (uretimde hash kullanilmali)
     if (user.password !== password) {
-      console.log('[v0] Password mismatch');
       return NextResponse.json({ error: 'Gecersiz e-posta veya sifre.' }, { status: 401 });
     }
 

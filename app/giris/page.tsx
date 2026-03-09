@@ -15,7 +15,6 @@ export default function AuthPage() {
     e.preventDefault();
     setLoading(true); setStatus(null);
     try {
-      console.log('[v0] Register form data:', formData);
       const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -29,15 +28,13 @@ export default function AuthPage() {
         })
       });
       const data = await res.json();
-      console.log('[v0] Register response:', data);
       if (res.ok) {
         setStatus({ type: 'success', text: data.message });
         setFormData({ name: '', taxNo: '', sector: '', role: '', email: '', password: '' });
       } else {
         setStatus({ type: 'error', text: data.error });
       }
-    } catch (err) {
-      console.error('[v0] Register error:', err);
+    } catch {
       setStatus({ type: 'error', text: 'Sistemsel bir hata olustu.' });
     }
     setLoading(false);
@@ -69,14 +66,12 @@ export default function AuthPage() {
               setLoading(true); 
               setStatus(null); 
               try { 
-                console.log('[v0] Login attempt:', formData.email);
                 const res = await fetch('/api/auth/login', { 
                   method: 'POST', 
                   headers: { 'Content-Type': 'application/json' }, 
                   body: JSON.stringify({ email: formData.email, password: formData.password }) 
                 }); 
                 const data = await res.json(); 
-                console.log('[v0] Login response:', data);
                 if (res.ok) { 
                   localStorage.setItem('tib_user', JSON.stringify(data.user)); 
                   // Admin ise admin paneline, degilse normal panele yonlendir
@@ -88,8 +83,7 @@ export default function AuthPage() {
                 } else { 
                   setStatus({ type: 'error', text: data.error }); 
                 } 
-              } catch (err) { 
-                console.error('[v0] Login error:', err);
+              } catch { 
                 setStatus({ type: 'error', text: 'Giris yapilamadi.' }); 
               } 
               setLoading(false); 
