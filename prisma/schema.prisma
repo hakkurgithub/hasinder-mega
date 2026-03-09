@@ -8,23 +8,43 @@ datasource db {
 }
 
 model User {
-  id         String      @id @default(uuid())
-  name       String
-  taxNo      String?
-  sector     String?
-  title      String?
-  email      String      @unique
-  password   String
-  iban       String?     // Finans API'si için gerekli
-  balance    Float       @default(0)
-  isAdmin    Boolean     @default(false)
-  status     String      @default("AKTIF")
-  tier       String      @default("STANDART")
-  createdAt  DateTime    @default(now())
-  
-  // İlişkiler
-  AdminLogs  AdminLog[]
-  mediations Mediation[] // Bu satır eksikti, hatanın ana sebebi buydu
+  id                    String      @id @default(uuid())
+  name                  String
+  taxNo                 String
+  sector                String
+  title                 String
+  email                 String      @unique
+  password              String
+  balance               Float       @default(0)
+  isAdmin               Boolean     @default(false)
+  status                String
+  tier                  String
+  iban                  String?
+  createdAt             DateTime    @default(now())
+  AdminLogs             AdminLog[]
+  MediationsAsMediator  Mediation[] @relation("MediatorRelation")
+}
+
+model Demand {
+  id          String      @id @default(uuid())
+  title       String
+  description String?
+  status      String      @default("BEKLEMEDE")
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  Mediations  Mediation[]
+}
+
+model Mediation {
+  id          String   @id @default(uuid())
+  status      String   @default("BEKLEMEDE")
+  amount      Float    @default(0)
+  mediatorId  String
+  demandId    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  mediator    User     @relation("MediatorRelation", fields: [mediatorId], references: [id])
+  demand      Demand   @relation(fields: [demandId], references: [id])
 }
 
 model AdminLog {
@@ -34,25 +54,4 @@ model AdminLog {
   createdAt DateTime @default(now())
   adminId   String
   Admin     User     @relation(fields: [adminId], references: [id])
-}
-
-model Mediation {
-  id         String   @id @default(uuid())
-  title      String
-  status     String   @default("BEKLEMEDE")
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  mediatorId String
-  demandId   String?
-  
-  // İlişki tanımı
-  mediator   User     @relation(fields: [mediatorId], references: [id])
-}
-
-// Eksik olan Demand modelini de ekleyelim ki hata vermesin
-model Demand {
-  id        String   @id @default(uuid())
-  title     String
-  status    String   @default("ACIK")
-  createdAt DateTime @default(now())
 }
