@@ -8,19 +8,23 @@ datasource db {
 }
 
 model User {
-  id          String   @id @default(uuid())
-  name        String
-  taxNo       String
-  sector      String
-  title       String
-  email       String   @unique
-  password    String
-  balance     Float    @default(0)
-  isAdmin     Boolean  @default(false)
-  status      String
-  tier        String
-  createdAt   DateTime @default(now())
-  AdminLogs   AdminLog[]
+  id         String      @id @default(uuid())
+  name       String
+  taxNo      String?
+  sector     String?
+  title      String?
+  email      String      @unique
+  password   String
+  iban       String?     // Finans API'si için gerekli
+  balance    Float       @default(0)
+  isAdmin    Boolean     @default(false)
+  status     String      @default("AKTIF")
+  tier       String      @default("STANDART")
+  createdAt  DateTime    @default(now())
+  
+  // İlişkiler
+  AdminLogs  AdminLog[]
+  mediations Mediation[] // Bu satır eksikti, hatanın ana sebebi buydu
 }
 
 model AdminLog {
@@ -30,4 +34,25 @@ model AdminLog {
   createdAt DateTime @default(now())
   adminId   String
   Admin     User     @relation(fields: [adminId], references: [id])
+}
+
+model Mediation {
+  id         String   @id @default(uuid())
+  title      String
+  status     String   @default("BEKLEMEDE")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  mediatorId String
+  demandId   String?
+  
+  // İlişki tanımı
+  mediator   User     @relation(fields: [mediatorId], references: [id])
+}
+
+// Eksik olan Demand modelini de ekleyelim ki hata vermesin
+model Demand {
+  id        String   @id @default(uuid())
+  title     String
+  status    String   @default("ACIK")
+  createdAt DateTime @default(now())
 }
