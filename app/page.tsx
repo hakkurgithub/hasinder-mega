@@ -6,11 +6,13 @@ export default async function Home() {
 
   try {
     // Veritabanı baglantisi varsa verileri cek
-    latestDemands = await prisma.demand.findMany({
-      where: { status: 'ACIK' },
-      orderBy: { createdAt: 'desc' },
-      take: 3,
-    });
+    if (prisma && prisma.demand) {
+      latestDemands = await prisma.demand.findMany({
+        where: { status: 'ACIK' },
+        orderBy: { createdAt: 'desc' },
+        take: 3,
+      });
+    }
   } catch (error) {
     console.error("Ana sayfa talepleri cekilemedi:", error);
     dbError = true;
