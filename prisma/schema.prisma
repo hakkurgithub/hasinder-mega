@@ -19,8 +19,32 @@ model User {
   isAdmin     Boolean  @default(false)
   status      String
   tier        String
+  iban        String?
   createdAt   DateTime @default(now())
   AdminLogs   AdminLog[]
+  MediationsAsMediator Mediation[] @relation("MediatorRelation")
+}
+
+model Demand {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  status      String   @default("BEKLEMEDE")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  Mediations  Mediation[]
+}
+
+model Mediation {
+  id          String   @id @default(uuid())
+  status      String   @default("BEKLEMEDE")
+  amount      Float    @default(0)
+  mediatorId  String
+  demandId    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  mediator    User     @relation("MediatorRelation", fields: [mediatorId], references: [id])
+  demand      Demand   @relation(fields: [demandId], references: [id])
 }
 
 model AdminLog {
