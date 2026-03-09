@@ -12,14 +12,13 @@ model User {
   name        String
   taxNo       String
   sector      String
-  title       String
+  role        String
   email       String   @unique
   password    String
   balance     Float    @default(0)
   isAdmin     Boolean  @default(false)
   status      String
   tier        String
-  iban        String?
   createdAt   DateTime @default(now())
   AdminLogs   AdminLog[]
   MediationsAsMediator Mediation[] @relation("MediatorRelation")
