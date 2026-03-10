@@ -10,10 +10,9 @@ export async function GET() {
       },
       orderBy: { createdAt: 'desc' }
     });
-
     return NextResponse.json(mediations);
   } catch (error) {
-    console.error('Mediation Fetch Error:', error);
-    return NextResponse.json({ error: 'Eşleşmeler yüklenemedi' }, { status: 500 });
+    console.error('Fetch Error:', error);
+    return NextResponse.json({ error: 'Veriler alınamadı' }, { status: 500 });
   }
 }
