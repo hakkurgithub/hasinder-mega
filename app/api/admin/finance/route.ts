@@ -8,13 +8,23 @@ export async function GET() {
     const finances = await prisma.mediation.findMany({
       where: { status: 'TAMAMLANDI' },
       include: {
-        mediator: { select: { name: true, iban: true, taxNo: true } },
-        demand: { select: { title: true } }
+        mediator: { 
+          select: { 
+            name: true, 
+            iban: true, 
+            taxNo: true 
+          } 
+        },
+        demand: true  // Eksikse ekle
       },
-      orderBy: { createdAt: 'desc' }
     });
-    return NextResponse.json(finances, { status: 200 });
+
+    return NextResponse.json(finances);
   } catch (error) {
-    return NextResponse.json({ error: 'Finansal veriler çekilemedi.' }, { status: 500 });
+    console.error('Finance fetch error:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch finances' }, 
+      { status: 500 }
+    );
   }
 }
