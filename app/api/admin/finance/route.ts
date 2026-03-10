@@ -12,9 +12,10 @@ export async function GET() {
         demand: { select: { title: true } }
       },
       orderBy: { createdAt: 'desc' }
-    });
+    }) || [];
     return NextResponse.json(finances, { status: 200 });
-  } catch (error) {
+  } catch (error: any) {
+    console.error('Finance GET Error:', error);
     return NextResponse.json({ error: 'Finansal veriler çekilemedi.' }, { status: 500 });
   }
 }

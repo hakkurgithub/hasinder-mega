@@ -9,9 +9,10 @@ export async function GET() {
     const pendingUsers = await prisma.user.findMany({
       where: { status: 'ONAY_BEKLIYOR' },
       orderBy: { createdAt: 'desc' }
-    });
+    }) || [];
     return NextResponse.json(pendingUsers, { status: 200 });
   } catch (error: any) {
+    console.error('Admin Users GET Error:', error);
     return NextResponse.json({ error: 'Kullanıcılar çekilemedi.' }, { status: 500 });
   }
 }
@@ -34,14 +35,19 @@ export async function PUT(request: Request) {
       ? 'Tebrikler, kurumsal siciliniz onaylanmıştır. Sisteme giriş yapıp ticarete ve komisyon kazanmaya başlayabilirsiniz.'
       : 'Üyelik başvurunuz platform standartlarını karşılamadığı için reddedilmiştir.';
     
-    await sendEmail(
-      updatedUser.email,
-      subject,
-      `<h2>Yönetim Kurulu Kararı</h2><p>${message}</p>`
-    );
+    try {
+      await sendEmail(
+        updatedUser.email,
+        subject,
+        `<h2>Yönetim Kurulu Kararı</h2><p>${message}</p>`
+      );
+    } catch (emailError) {
+      console.error('Email gönderme hatası:', emailError);
+    }
 
     return NextResponse.json({ success: true, user: updatedUser }, { status: 200 });
   } catch (error: any) {
+    console.error('Admin Users PUT Error:', error);
     return NextResponse.json({ error: 'İşlem başarısız.' }, { status: 500 });
   }
 }
