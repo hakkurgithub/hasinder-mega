@@ -10,7 +10,7 @@ export async function GET() {
       include: {
         demand: { select: { title: true } },
         mediator: { select: { name: true } },
-        seller: { select: { name: true } }
+        mediator: { select: { name: true } }
       },
       orderBy: { createdAt: 'desc' }
     });
