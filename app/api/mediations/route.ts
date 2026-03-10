@@ -3,47 +3,65 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+// Tüm mediations'ları listele
+export async function GET() {
+  try {
+    const mediations = await prisma.mediation.findMany({
+      orderBy: { createdAt: 'desc' },
+      include: {
+        mediator: { select: { id: true, name: true, email: true } },
+        demand: { select: { id: true, title: true, status: true } }
+      }
+    });
+    return NextResponse.json(mediations ?? [], { status: 200 });
+  } catch (error: any) {
+    console.error('Mediations GET Error:', error);
+    return NextResponse.json({ error: 'Eşleşmeler çekilemedi.' }, { status: 500 });
+  }
+}
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { demandId, mediatorId, sellerTaxNo, proposedPrice } = body;
+    const { demandId, mediatorId, proposedPrice } = body;
 
-    if (!demandId || !mediatorId || !sellerTaxNo || !proposedPrice) {
-      return NextResponse.json({ error: 'Lütfen tüm alanları doldurun.' }, { status: 400 });
+    if (!demandId || !mediatorId) {
+      return NextResponse.json({ error: 'Talep ID ve Aracı ID zorunludur.' }, { status: 400 });
     }
 
-    // 1. Satıcının platformda kayıtlı olup olmadığını Vergi Numarasından kontrol et
-    const seller = await prisma.user.findUnique({
-      where: { taxNo: sellerTaxNo }
+    // Aracının var olup olmadığını kontrol et
+    const mediator = await prisma.user.findUnique({
+      where: { id: mediatorId }
     });
 
-    if (!seller) {
-      return NextResponse.json({ error: 'Girdiğiniz Vergi Numarasına ait bir satıcı sistemde bulunamadı. Lütfen önce tedarikçinizin platforma resmi kaydını yapmasını sağlayın.' }, { status: 404 });
+    if (!mediator) {
+      return NextResponse.json({ error: 'Aracı bulunamadı.' }, { status: 404 });
     }
 
-    if (seller.id === mediatorId) {
-      return NextResponse.json({ error: 'Kendi kendinize aracılık yapamazsınız.' }, { status: 400 });
+    // Talebin var olup olmadığını kontrol et
+    const demand = await prisma.demand.findUnique({
+      where: { id: demandId }
+    });
+
+    if (!demand) {
+      return NextResponse.json({ error: 'Talep bulunamadı.' }, { status: 404 });
     }
 
-    // 2. Komisyon Hesaplama (Örn: Toplam tutarın %2'si Aracıya)
-    const priceValue = parseFloat(proposedPrice);
-    if (isNaN(priceValue) || priceValue <= 0) {
-      return NextResponse.json({ error: 'Lütfen geçerli bir teklif tutarı girin.' }, { status: 400 });
-    }
-    const commissionAmount = priceValue * 0.02; // %2 Bilgi Komisyonu
+    // Komisyon tutarını hesapla (varsa)
+    const priceValue = proposedPrice ? parseFloat(proposedPrice) : 0;
+    const commissionAmount = priceValue > 0 ? priceValue * 0.02 : 0; // %2 Bilgi Komisyonu
 
-    // 3. Eşleştirmeyi (Mediation) Veritabanına Kaydet
+    // Eşleştirmeyi (Mediation) Veritabanına Kaydet
     const mediation = await prisma.mediation.create({
       data: {
         demandId,
         mediatorId,
-        sellerId: seller.id,
-        commissionAmount,
-        status: 'BEKLEMEDE' // Yönetim veya Alıcı onayına sunulacak
+        amount: commissionAmount,
+        status: 'BEKLEMEDE'
       }
     });
 
-    // 4. Talebin durumunu 'ESLESTI' olarak güncelle
+    // Talebin durumunu 'ESLESTI' olarak güncelle
     await prisma.demand.update({
       where: { id: demandId },
       data: { status: 'ESLESTI' }
@@ -51,7 +69,10 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ 
       success: true, 
-      message: `✅ Eşleştirme Başarılı! İşlem tamamlandığında hesabınıza ₺${commissionAmount.toFixed(2)} komisyon yatırılacaktır.` 
+      mediation,
+      message: commissionAmount > 0 
+        ? `Esleştirme Başarılı! İşlem tamamlandığında hesabınıza ${commissionAmount.toFixed(2)} TL komisyon yatırılacaktır.`
+        : 'Eşleştirme başarıyla oluşturuldu.'
     }, { status: 201 });
 
   } catch (error: any) {

@@ -22,7 +22,16 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ 
       success: true, 
-      user: { id: user.id, name: user.name, role: user.role, sector: user.sector, balance: user.balance } 
+      user: { 
+        id: user.id, 
+        name: user.name, 
+        title: user.title, 
+        sector: user.sector, 
+        balance: user.balance,
+        isAdmin: user.isAdmin,
+        status: user.status,
+        tier: user.tier
+      } 
     }, { status: 200 });
 
   } catch (error: any) {

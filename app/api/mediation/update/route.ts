@@ -6,9 +6,13 @@ const prisma = new PrismaClient();
 
 export async function PUT(request: Request) {
   try {
-    const { mediationId, newStatus, userId } = await request.json();
+    const { mediationId, newStatus } = await request.json();
 
-    // Sadece alıcı veya admin onay verebilir (Güvenlik kuralı)
+    if (!mediationId || !newStatus) {
+      return NextResponse.json({ error: 'Eksik veri.' }, { status: 400 });
+    }
+
+    // Mediation'ın var olup olmadığını kontrol et
     const mediation = await prisma.mediation.findUnique({
       where: { id: mediationId },
       include: { demand: true }
@@ -16,20 +20,15 @@ export async function PUT(request: Request) {
 
     if (!mediation) return NextResponse.json({ error: 'İşlem bulunamadı.' }, { status: 404 });
 
-    // Hukuki Zırh: Alıcı malı teslim aldım demeden statü 'TAMAMLANDI' olamaz.
+    // Mediation durumunu güncelle
     const updated = await prisma.mediation.update({
       where: { id: mediationId },
       data: { status: newStatus }
     });
 
     return NextResponse.json({ success: true, status: updated.status });
-  } catch (error) {
+  } catch (error: any) {
+    console.error('Mediation Update Error:', error);
     return NextResponse.json({ error: 'İşlem güncellenemedi.' }, { status: 500 });
-  }
-}
-
-function mkdirRecursive(dir) {
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
   }
 }

@@ -9,13 +9,14 @@ export async function GET() {
     const demands = await prisma.demand.findMany({
       orderBy: { createdAt: 'desc' },
       include: {
-        creator: {
-          select: { name: true, sector: true }
+        Mediations: {
+          select: { id: true, status: true, amount: true }
         }
       }
     });
-    return NextResponse.json(demands, { status: 200 });
+    return NextResponse.json(demands ?? [], { status: 200 });
   } catch (error: any) {
+    console.error('Demands GET Error:', error);
     return NextResponse.json({ error: 'Talepler çekilirken hata oluştu.' }, { status: 500 });
   }
 }
@@ -24,18 +25,23 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { title, amount, sector, creatorId } = body;
+    const { title, description } = body;
 
-    if (!title || !amount || !sector || !creatorId) {
-      return NextResponse.json({ error: 'Tüm alanları doldurmanız zorunludur.' }, { status: 400 });
+    if (!title) {
+      return NextResponse.json({ error: 'Talep başlığı zorunludur.' }, { status: 400 });
     }
 
     const newDemand = await prisma.demand.create({
-      data: { title, amount, sector, creatorId }
+      data: { 
+        title, 
+        description: description || null,
+        status: 'BEKLEMEDE'
+      }
     });
 
     return NextResponse.json({ success: true, demand: newDemand }, { status: 201 });
   } catch (error: any) {
+    console.error('Demands POST Error:', error);
     return NextResponse.json({ error: 'Talep açılamadı: ' + error.message }, { status: 500 });
   }
 }
