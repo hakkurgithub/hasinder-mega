@@ -10,7 +10,7 @@ datasource db {
 model User {
   id                    String      @id @default(uuid())
   name                  String
-  taxNo                 String?
+  taxNo                 String?     @unique // Değişiklik: Artık vergi no ile tekil arama yapılabilir
   sector                String?
   title                 String?
   email                 String      @unique
