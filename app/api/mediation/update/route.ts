@@ -1,22 +1,21 @@
-
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 export async function PUT(request: Request) {
   try {
-    const { mediationId, newStatus, userId } = await request.json();
+    const { mediationId, newStatus } = await request.json();
 
-    // Sadece alıcı veya admin onay verebilir (Güvenlik kuralı)
+    // Arabuluculuk kaydını bul ve ilişkili talebi kontrol et
     const mediation = await prisma.mediation.findUnique({
       where: { id: mediationId },
       include: { demand: true }
     });
 
-    if (!mediation) return NextResponse.json({ error: 'İşlem bulunamadı.' }, { status: 404 });
+    if (!mediation) {
+      return NextResponse.json({ error: 'İşlem bulunamadı.' }, { status: 404 });
+    }
 
-    // Hukuki Zırh: Alıcı malı teslim aldım demeden statü 'TAMAMLANDI' olamaz.
+    // Statü Güncelleme (Hukuki Zırh: Alıcı onayı vb. kontroller panelden yönetilir)
     const updated = await prisma.mediation.update({
       where: { id: mediationId },
       data: { status: newStatus }
@@ -24,12 +23,7 @@ export async function PUT(request: Request) {
 
     return NextResponse.json({ success: true, status: updated.status });
   } catch (error) {
+    console.error('Mediation update error:', error);
     return NextResponse.json({ error: 'İşlem güncellenemedi.' }, { status: 500 });
-  }
-}
-
-function mkdirRecursive(dir) {
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
   }
 }
