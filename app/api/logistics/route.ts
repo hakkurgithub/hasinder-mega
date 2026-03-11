@@ -1,7 +1,5 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 export async function GET() {
   try {
@@ -9,36 +7,27 @@ export async function GET() {
       where: { status: 'AKTIF' },
       orderBy: { createdAt: 'desc' }
     });
-    return NextResponse.json(routes, { status: 200 });
-  } catch (error: any) {
-    return NextResponse.json({ error: 'Lojistik rotaları çekilirken hata oluştu.' }, { status: 500 });
+    return NextResponse.json(routes);
+  } catch (error) {
+    return NextResponse.json({ error: 'Rotalar çekilemedi' }, { status: 500 });
   }
 }
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { origin, destination, vehicleType, capacity, targetPrice } = body;
-
-    if (!origin || !destination || !vehicleType || !capacity) {
-      return NextResponse.json({ error: 'Lütfen zorunlu lojistik alanlarını doldurun.' }, { status: 400 });
-    }
-
-    const priceValue = targetPrice ? parseFloat(targetPrice) : null;
-
     const newRoute = await prisma.logisticsRoute.create({
       data: {
-        origin,
-        destination,
-        vehicleType,
-        capacity,
-        targetPrice: priceValue,
+        origin: body.origin,
+        destination: body.destination,
+        vehicleType: body.vehicleType,
+        capacity: body.capacity,
+        targetPrice: body.targetPrice ? parseFloat(body.targetPrice) : null,
         status: 'AKTIF'
       }
     });
-
-    return NextResponse.json({ success: true, route: newRoute }, { status: 201 });
-  } catch (error: any) {
-    return NextResponse.json({ error: 'Rota oluşturulamadı: ' + error.message }, { status: 500 });
+    return NextResponse.json(newRoute, { status: 201 });
+  } catch (error) {
+    return NextResponse.json({ error: 'Rota oluşturulamadı' }, { status: 500 });
   }
 }

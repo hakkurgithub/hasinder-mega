@@ -13,6 +13,7 @@ model User {
   taxNo                 String?     @unique
   role                  String?     @default("USER")
   phone                 String?
+  iban                  String?
   email                 String      @unique
   password              String
   balance               Float       @default(0)
@@ -30,6 +31,7 @@ model Demand {
   amount      Float       @default(0)
   status      String      @default("BEKLEMEDE")
   creatorId   String
+  createdAt   DateTime    @default(now())
   creator     User        @relation("UserDemands", fields: [creatorId], references: [id])
   Mediations  Mediation[]
 }
@@ -46,6 +48,17 @@ model Mediation {
   mediator         User     @relation("MediatorRelation", fields: [mediatorId], references: [id])
   seller           User     @relation("SellerRelation", fields: [sellerId], references: [id])
   demand           Demand   @relation(fields: [demandId], references: [id])
+}
+
+model LogisticsRoute {
+  id          String   @id @default(uuid())
+  origin      String
+  destination String
+  vehicleType String
+  capacity    String
+  targetPrice Float?
+  status      String   @default("AKTIF")
+  createdAt   DateTime @default(now())
 }
 
 model Haber {
