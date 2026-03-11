@@ -12,7 +12,6 @@ export async function GET() {
     });
     return NextResponse.json(mediations);
   } catch (error) {
-    console.error('Fetch Error:', error);
     return NextResponse.json({ error: 'Veriler alınamadı' }, { status: 500 });
   }
 }
