@@ -1,49 +1,32 @@
-import { autoClassify } from '@/lib/radar/sectorClassifier';
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
 
-export async function GET() {
+export async function POST(req: Request) {
   try {
-    console.log('API: Haberler getiriliyor...');
+    const { baslik, icerik, resim } = await req.json();
     
-    const haberler = await prisma.haber.findMany({
-      orderBy: { createdAt: 'desc' }
+    // v0'dan gelen Türkçe verileri Prisma'nın İngilizce alanlarına mühürle
+    const haber = await prisma.haber.create({
+      data: {
+        title: baslik,
+        content: icerik,
+        image: resim || null
+      }
     });
-    
-    console.log('API: Bulunan haber sayısı:', haberler.length);
-    
-    return NextResponse.json(haberler);
+
+    return NextResponse.json({ success: true, haber });
   } catch (error) {
-    console.error('API Hatası:', error);
-    return NextResponse.json({ 
-      error: 'Haberler yüklenemedi',
-      details: error instanceof Error ? error.message : 'Bilinmeyen hata'
-    }, { status: 500 });
+    return NextResponse.json({ error: 'Haber eklenemedi' }, { status: 500 });
   }
 }
 
-export async function POST(request: NextRequest) {
+export async function GET() {
   try {
-    const { baslik, icerik, resim } = await request.json();
-    
-    console.log('API: Yeni haber ekleniyor:', { baslik });
-    
-    const haber = await prisma.haber.create({
-      data: {
-        baslik,
-        icerik,
-        resim: resim || null
-      }
+    const haberler = await prisma.haber.findMany({
+      orderBy: { createdAt: 'desc' }
     });
-    
-    console.log('API: Haber eklendi:', haber.id);
-    
-    return NextResponse.json({ message: 'Haber başarıyla eklendi', haber }, { status: 201 });
+    return NextResponse.json(haberler);
   } catch (error) {
-    console.error('API Hatası (POST):', error);
-    return NextResponse.json({ 
-      error: 'Haber eklenemedi',
-      details: error instanceof Error ? error.message : 'Bilinmeyen hata'
-    }, { status: 500 });
+    return NextResponse.json({ error: 'Haberler alınamadı' }, { status: 500 });
   }
 }

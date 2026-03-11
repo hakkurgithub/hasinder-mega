@@ -65,5 +65,6 @@ model Haber {
   id        String   @id @default(uuid())
   title     String
   content   String?
+  image     String?   // Haber görseli için eklendi
   createdAt DateTime @default(now())
 }
