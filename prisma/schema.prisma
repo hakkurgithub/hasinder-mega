@@ -40,6 +40,18 @@ model Demand {
   Mediations  Mediation[]
 }
 
+model LogisticsRoute {
+  id          String   @id @default(uuid())
+  origin      String
+  destination String
+  vehicleType String
+  capacity    String
+  targetPrice Float?
+  status      String   @default("AKTIF")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
 model Mediation {
   id          String   @id @default(uuid())
   status      String   @default("BEKLEMEDE")
@@ -65,6 +77,6 @@ model Haber {
   id        String   @id @default(uuid())
   title     String
   content   String?
-  image     String?   // Haber görseli için eklendi
+  image     String?
   createdAt DateTime @default(now())
 }
