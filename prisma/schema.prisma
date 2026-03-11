@@ -10,28 +10,33 @@ datasource db {
 model User {
   id                    String      @id @default(uuid())
   name                  String
-  taxNo                 String
-  sector                String
-  title                 String
+  taxNo                 String?
+  sector                String?
+  title                 String?
   email                 String      @unique
   password              String
   balance               Float       @default(0)
   isAdmin               Boolean     @default(false)
-  status                String
-  tier                  String
+  status                String      @default("AKTIF")
+  tier                  String      @default("STANDART")
   iban                  String?
   createdAt             DateTime    @default(now())
   AdminLogs             AdminLog[]
   MediationsAsMediator  Mediation[] @relation("MediatorRelation")
+  Demands               Demand[]    @relation("UserDemands")
 }
 
 model Demand {
   id          String      @id @default(uuid())
   title       String
   description String?
+  amount      Float       @default(0)
+  sector      String?
   status      String      @default("BEKLEMEDE")
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
+  creatorId   String
+  creator     User        @relation("UserDemands", fields: [creatorId], references: [id])
   Mediations  Mediation[]
 }
 
