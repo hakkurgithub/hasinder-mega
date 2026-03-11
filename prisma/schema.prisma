@@ -10,9 +10,11 @@ datasource db {
 model User {
   id                    String      @id @default(uuid())
   name                  String
-  taxNo                 String?     @unique // Değişiklik: Artık vergi no ile tekil arama yapılabilir
+  taxNo                 String?     @unique
   sector                String?
   title                 String?
+  role                  String?     @default("USER") // Eklendi
+  phone                 String?     // Eklendi
   email                 String      @unique
   password              String
   balance               Float       @default(0)
@@ -23,6 +25,7 @@ model User {
   createdAt             DateTime    @default(now())
   AdminLogs             AdminLog[]
   MediationsAsMediator  Mediation[] @relation("MediatorRelation")
+  MediationsAsSeller    Mediation[] @relation("SellerRelation")
   Demands               Demand[]    @relation("UserDemands")
 }
 
@@ -53,15 +56,18 @@ model LogisticsRoute {
 }
 
 model Mediation {
-  id          String   @id @default(uuid())
-  status      String   @default("BEKLEMEDE")
-  amount      Float    @default(0)
-  mediatorId  String
-  demandId    String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  mediator    User     @relation("MediatorRelation", fields: [mediatorId], references: [id])
-  demand      Demand   @relation(fields: [demandId], references: [id])
+  id               String   @id @default(uuid())
+  status           String   @default("BEKLEMEDE")
+  amount           Float    @default(0)
+  commissionAmount Float    @default(0)
+  mediatorId       String
+  demandId         String
+  sellerId         String
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  mediator         User     @relation("MediatorRelation", fields: [mediatorId], references: [id])
+  seller           User     @relation("SellerRelation", fields: [sellerId], references: [id])
+  demand           Demand   @relation(fields: [demandId], references: [id])
 }
 
 model AdminLog {
