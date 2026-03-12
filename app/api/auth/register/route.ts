@@ -1,12 +1,33 @@
 import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import bcrypt from 'bcryptjs';
 
 export async function POST(request: Request) {
-  const { name, email, inviteCode } = await request.json();
-  
-  // Sadece yetkili davet kodlarini kabul et (Örn: HASINDER2026)
-  if (inviteCode !== 'HASINDER2026') {
-    return NextResponse.json({ error: 'Gecersiz Davet Kodu' }, { status: 403 });
-  }
+  try {
+    const { name, email, password } = await request.json();
 
-  return NextResponse.json({ success: true, message: 'Kayit Alindi, OTP Bekleniyor' });
+    if (!name || !email || !password) {
+      return NextResponse.json({ error: 'Eksik bilgiler var' }, { status: 400 });
+    }
+
+    const existingUser = await prisma.user.findUnique({ where: { email } });
+    if (existingUser) {
+      return NextResponse.json({ error: 'Bu e-posta zaten kayıtlı' }, { status: 400 });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = await prisma.user.create({
+      data: {
+        name,
+        email,
+        password: hashedPassword,
+        role: 'USER',
+      },
+    });
+
+    return NextResponse.json({ success: true, message: 'Kayıt başarılı' });
+  } catch (error) {
+    console.error("Kayıt hatası:", error);
+    return NextResponse.json({ error: 'Kayıt sırasında bir hata oluştu' }, { status: 500 });
+  }
 }
