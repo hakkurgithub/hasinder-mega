@@ -1,45 +1,59 @@
 import { prisma } from '@/lib/prisma';
 
 export default async function Home() {
-  // TypeScript hatasını önlemek için tipini any[] olarak mühürlüyoruz
+  // TypeScript'in 'never[]' hatasını bu mühürle aşıyoruz
   let latestDemands: any[] = [];
   let dbError = false;
 
   try {
-    // Şemadaki status ve createdAt alanlarına göre veri çekiyoruz
+    // Şemamızda mühürlü olan 'BEKLEMEDE' statüsüne göre çekiyoruz
     latestDemands = await prisma.demand.findMany({
-      where: { status: 'BEKLEMEDE' }, // Şemadaki varsayılan status BEKLEMEDE
+      where: { status: 'BEKLEMEDE' },
       orderBy: { createdAt: 'desc' },
-      take: 3,
+      take: 5,
     });
   } catch (error) {
-    console.error("Ana sayfa talepleri çekilemedi:", error);
+    console.error("Ana sayfa veritabanı hatası:", error);
     dbError = true;
   }
 
   return (
-    <div style={{padding:'40px', background:'#0f172a', minHeight:'100vh', color:'#fff', fontFamily:'sans-serif'}}>
-      <h1 style={{color:'#fbbf24', fontSize:'2.5rem', marginBottom:'20px'}}>HAS İNSAN DER - TİB Ağı</h1>
-      
-      {dbError ? (
-        <div style={{padding:'20px', border:'1px solid #ef4444', borderRadius:'10px', background:'rgba(239, 68, 68, 0.1)'}}>
-          <p>⚠️ Sistem bakımda veya veritabanı bağlantısı bekleniyor.</p>
-        </div>
-      ) : (
-        <div style={{marginTop:'30px'}}>
-          <h2 style={{borderBottom:'2px solid #fbbf24', display:'inline-block', marginBottom:'20px'}}>Son Talepler</h2>
-          <div style={{display:'grid', gap:'15px'}}>
-            {latestDemands.length > 0 ? (
-              latestDemands.map(d => (
-                <div key={d.id} style={{padding:'15px', background:'rgba(255,255,255,0.05)', borderRadius:'8px', borderLeft:'4px solid #fbbf24'}}>
-                  <strong style={{fontSize:'1.2rem'}}>{d.title}</strong>
-                  <p style={{margin:'5px 0 0', color:'#94a3b8'}}>Tutar: {d.amount} TL</p>
-                </div>
-              ))
-            ) : <p>Henüz aktif bir talep bulunmuyor.</p>}
+    <div className="min-h-screen bg-slate-900 text-white p-8 font-sans">
+      <header className="max-w-4xl mx-auto border-b border-amber-500/30 pb-6 text-center">
+        <h1 className="text-4xl font-bold text-amber-500">HAS İNSAN DER</h1>
+        <p className="text-slate-400 mt-2 font-semibold">TİB Ağı - Ticari İstihbarat ve İş Birliği</p>
+      </header>
+
+      <main className="max-w-4xl mx-auto mt-12">
+        {dbError ? (
+          <div className="bg-red-500/10 border border-red-500 p-6 rounded-2xl text-center">
+            <p className="text-lg">⚠️ Sistem bakımı devam ediyor. Veritabanı bağlantısı bekleniyor.</p>
           </div>
-        </div>
-      )}
+        ) : (
+          <section>
+            <h2 className="text-2xl font-semibold mb-6 border-l-4 border-amber-500 pl-4">Son Talepler</h2>
+            <div className="grid gap-4">
+              {latestDemands.length > 0 ? (
+                latestDemands.map((d: any) => (
+                  <div key={d.id} className="bg-slate-800 p-6 rounded-2xl border border-slate-700 hover:border-amber-500/50 transition-all shadow-xl">
+                    <div className="flex justify-between items-center">
+                      <h3 className="text-xl font-bold">{d.title}</h3>
+                      <span className="bg-amber-500/20 text-amber-500 px-3 py-1 rounded-full text-xs font-bold uppercase">
+                        {d.status}
+                      </span>
+                    </div>
+                    <p className="text-amber-400 font-mono mt-3 text-lg">{d.amount.toLocaleString()} TL</p>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-10 bg-slate-800/50 rounded-2xl border border-dashed border-slate-700">
+                  <p className="text-slate-500 italic">Şu an aktif bir talep mühürlenmemiştir.</p>
+                </div>
+              )}
+            </div>
+          </section>
+        )}
+      </main>
     </div>
   );
 }
