@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { prisma, disconnectPrisma } from '@/lib/prisma';
 import { SignJWT } from 'jose';
 import { cookies } from 'next/headers';
 import bcrypt from 'bcryptjs';
@@ -16,8 +16,6 @@ export async function POST(request: Request) {
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
-    
-    // Geçici Düz Metin Kontrolü (Sadece ilk göç aşaması için)
     const isPlainValid = user.password === password;
 
     if (!isPasswordValid && !isPlainValid) {
@@ -39,6 +37,9 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ success: true, user: { name: user.name, role: user.role } });
   } catch (error) {
+    console.error('Login error:', error);
     return NextResponse.json({ error: 'Sunucu hatası' }, { status: 500 });
+  } finally {
+    await disconnectPrisma();
   }
 }
