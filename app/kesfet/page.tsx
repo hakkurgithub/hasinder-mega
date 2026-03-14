@@ -1,3 +1,4 @@
+import Link from 'next/link';
 'use client';
 import React, { useState, useEffect } from 'react';
 import { PlusCircle, BarChart3, ClipboardList } from 'lucide-react';
@@ -58,9 +59,9 @@ export default function Panel() {
       {/* Header */}
       <header className="flex justify-between items-center mb-10">
         <h1 className="text-3xl font-bold text-[#1B365D] dark:text-white">TIB HUB Operational Center</h1>
-        <button onClick={addDemand} disabled={loading} className="flex items-center gap-2 bg-[#1B365D] text-[#D4AF37] px-6 py-3 rounded-xl font-semibold">
+        <Link href="/dashboard"><button className="flex items-center gap-2 bg-[#1B365D] text-[#D4AF37] px-6 py-3 rounded-xl font-semibold">
           <PlusCircle /> {loading ? 'İşlemde...' : 'Yeni İlan / New Trade'}
-        </button>
+        </button></Link>
       </header>
 
       {/* KPI Panel */}
