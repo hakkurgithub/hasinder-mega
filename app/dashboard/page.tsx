@@ -1,34 +1,84 @@
 'use client';
-import React,{useState,useEffect} from 'react';
-import {createClient} from '@supabase/supabase-js';
 
-const S_URL='https://scxwhchnuhsuzkfvqmqw.supabase.co';
-const S_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNjeHdoY2hudWhzdXprZnZxbXF3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwMDM2OTQsImV4cCI6MjA4NzU3OTY5NH0.C_5GC8Eg9JFZuvtjJHKRYcbnVWSBgJ22ySC7Iti3a8w';
-const sb=createClient(S_URL,S_KEY);
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
-export default function TIB_V11(){
-  const [data,setData] = useState<any[]>([]);
-  
-  const refresh = async () => {
-    const {data:res} = await sb.from('trades').select('*').order('created_at',{ascending:false});
-    if(res) setData(res);
-  };
+export default function Dashboard() {
+  const router = useRouter();
+  const [title, setTitle] = useState('');
+  const [amount, setAmount] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  useEffect(() => {
-    refresh();
-  }, []);
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
 
-  return(
-    <div style={{padding:'40px',background:'#0f172a',minHeight:'100vh',color:'#f8fafc',fontFamily:'sans-serif',textAlign:'center'}}>
-      <h1 style={{color:'#fbbf24'}}>TIB HUB v11.0 - CANLI</h1>
-      <div style={{maxWidth:'800px',margin:'40px auto',background:'#1e293b',padding:'20px',borderRadius:'15px'}}>
-        {data.length > 0 ? data.map(x=>(
-          <div key={x.id} style={{padding:'15px',borderBottom:'1px solid #334155',display:'flex',justifyContent:'space-between'}}>
-            <span>{x.title}</span>
-            <span style={{color:'#fbbf24'}}>{x.amount}</span>
-          </div>
-        )) : <p>Veriler yukleniyor...</p>}
-      </div>
-    </div>
+    try {
+      const res = await fetch('/api/demands', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, amount: parseFloat(amount) }),
+      });
+
+      if (res.ok) {
+        setTitle('');
+        setAmount('');
+        alert('Talep başarıyla oluşturuldu!');
+        router.push('/'); // Ana sayfaya yönlendir
+      } else {
+        const data = await res.json();
+        setError(data.error || 'Bir hata oluştu');
+      }
+    } catch (err) {
+      setError('Bağlantı hatası');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <main className="min-h-screen bg-gray-900 text-white p-8">
+      <h1 className="text-3xl font-bold text-yellow-500 mb-8">Yeni Talep Oluştur</h1>
+      
+      <form onSubmit={handleSubmit} className="max-w-md bg-gray-800 p-6 rounded-lg mx-auto">
+        <div className="mb-4">
+          <label className="block text-sm font-medium mb-2">Talep Başlığı</label>
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="w-full p-2 bg-gray-700 rounded text-white"
+            placeholder="Örn: 1000 kg pamuk ihtiyacı"
+            required
+          />
+        </div>
+
+        <div className="mb-4">
+          <label className="block text-sm font-medium mb-2">Tutar (TL)</label>
+          <input
+            type="number"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            className="w-full p-2 bg-gray-700 rounded text-white"
+            placeholder="50000"
+            required
+          />
+        </div>
+
+        {error && (
+          <div className="mb-4 p-2 bg-red-900 rounded text-sm">{error}</div>
+        )}
+
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full bg-yellow-600 hover:bg-yellow-500 text-white font-bold py-2 px-4 rounded disabled:opacity-50"
+        >
+          {loading ? 'Gönderiliyor...' : 'Talep Oluştur'}
+        </button>
+      </form>
+    </main>
   );
 }
