@@ -9,9 +9,7 @@ export const prisma = globalForPrisma.prisma || new PrismaClient({
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
 
 export const disconnectPrisma = async () => {
-  if (process.env.NODE_ENV === 'production') {
-    await prisma.$disconnect()
-  }
+  await prisma.$disconnect()
 }
 
 export default prisma
