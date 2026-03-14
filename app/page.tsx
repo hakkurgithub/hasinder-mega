@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 
 interface Demand {
   id: string;
@@ -41,9 +42,16 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-gray-900 text-white p-8">
-      <h1 className="text-4xl font-bold text-yellow-500 mb-8">
-        HAS İNSAN DER - TİB Ağı
-      </h1>
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-4xl font-bold text-yellow-500">
+          HAS İNSAN DER - TİB Ağı
+        </h1>
+        <Link href="/dashboard">
+          <button className="bg-yellow-600 hover:bg-yellow-500 text-white font-bold py-2 px-4 rounded">
+            + Yeni Talep Oluştur
+          </button>
+        </Link>
+      </div>
       
       {dbError ? (
         <div className="bg-red-900/50 border border-red-500 p-4 rounded-lg">
