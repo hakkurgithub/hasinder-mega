@@ -26,7 +26,7 @@ export default function Dashboard() {
         setTitle('');
         setAmount('');
         alert('Talep başarıyla oluşturuldu!');
-        router.push('/'); // Ana sayfaya yönlendir
+        router.push('/');
       } else {
         const data = await res.json();
         setError(data.error || 'Bir hata oluştu');
@@ -40,7 +40,7 @@ export default function Dashboard() {
 
   return (
     <main className="min-h-screen bg-gray-900 text-white p-8">
-      <h1 className="text-3xl font-bold text-yellow-500 mb-8">Yeni Talep Oluştur</h1>
+      <h1 className="text-3xl font-bold text-yellow-500 mb-8 text-center">Yeni Talep Oluştur</h1>
       
       <form onSubmit={handleSubmit} className="max-w-md bg-gray-800 p-6 rounded-lg mx-auto">
         <div className="mb-4">
@@ -49,7 +49,7 @@ export default function Dashboard() {
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full p-2 bg-gray-700 rounded text-white"
+            className="w-full p-3 bg-gray-700 rounded text-white"
             placeholder="Örn: 1000 kg pamuk ihtiyacı"
             required
           />
@@ -61,20 +61,20 @@ export default function Dashboard() {
             type="number"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
-            className="w-full p-2 bg-gray-700 rounded text-white"
+            className="w-full p-3 bg-gray-700 rounded text-white"
             placeholder="50000"
             required
           />
         </div>
 
         {error && (
-          <div className="mb-4 p-2 bg-red-900 rounded text-sm">{error}</div>
+          <div className="mb-4 p-3 bg-red-900 rounded text-sm">{error}</div>
         )}
 
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-yellow-600 hover:bg-yellow-500 text-white font-bold py-2 px-4 rounded disabled:opacity-50"
+          className="w-full bg-yellow-600 hover:bg-yellow-500 text-white font-bold py-3 px-4 rounded disabled:opacity-50"
         >
           {loading ? 'Gönderiliyor...' : 'Talep Oluştur'}
         </button>
