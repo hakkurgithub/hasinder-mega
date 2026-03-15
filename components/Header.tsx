@@ -1,38 +1,92 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { User, LogOut, Settings } from 'lucide-react';
 
 export default function Header() {
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+
+  useEffect(() => {
+    fetch('/api/auth/verify')
+      .then(res => res.json())
+      .then(data => {
+        if (data.user) setUser(data.user);
+        setLoading(false);
+      })
+      .catch(() => {
+        setUser(null);
+        setLoading(false);
+      });
+  }, []);
+
+  const handleLogout = async () => {
+    await fetch('/api/auth/logout', { method: 'POST' });
+    setUser(null);
+    router.refresh();
+    window.location.href = '/';
+  };
+
+  if (loading) {
+    return <header className="h-16 bg-[#1B365D] animate-pulse" />;
+  }
+
   return (
-    <header className="bg-[#1B365D] text-white p-4 sticky top-0 z-50 border-b border-[#D4AF37]/30 shadow-2xl">
-      <div className="max-w-7xl mx-auto flex flex-col xl:flex-row justify-between items-center gap-4">
-        
-        {/* LOGO & RESMİ İSİM */}
-        <Link href="/" className="flex items-center space-x-3 shrink-0">
-          <img src="https://raw.githubusercontent.com/hakkurgithub/images/main/silicon-campus-logo.jpg" alt="Silicon Campus" className="h-10 rounded" />
-          <div className="flex flex-col">
-            <span className="text-[10px] md:text-xs font-black tracking-tighter italic leading-none">İSTANBUL & HATAY SANAYİCİ VE İŞ İNSANLARI</span>
-            <span className="text-[#D4AF37] text-[8px] md:text-[9px] font-bold uppercase tracking-widest leading-tight">YATIRIM VE İŞ BİRLİĞİ PLATFORMU (HAS İNSANDER)</span>
+    <header className="h-16 bg-[#1B365D] border-b border-[#D4AF37]/20 px-4 md:px-8 flex items-center justify-between">
+      <Link href="/" className="flex items-center gap-2">
+        <span className="text-xl font-bold text-[#D4AF37]">HASINDER</span>
+      </Link>
+
+      <nav className="hidden md:flex items-center gap-6">
+        <Link href="/" className="text-gray-300 hover:text-[#D4AF37]">Ana Sayfa</Link>
+        <Link href="/kesfet" className="text-gray-300 hover:text-[#D4AF37]">Keşfet</Link>
+        <Link href="/haberler" className="text-gray-300 hover:text-[#D4AF37]">Haberler</Link>
+      </nav>
+
+      <div className="flex items-center gap-4">
+        {user ? (
+          <div className="flex items-center gap-3">
+            <div className="text-right hidden sm:block">
+              <p className="text-sm font-medium text-white">{user.name || user.email}</p>
+              <p className="text-xs text-[#D4AF37]">{user.isAdmin ? '��� Admin' : 'Üye'}</p>
+            </div>
+            
+            {user.isAdmin && (
+              <Link 
+                href="/admin" 
+                className="px-3 py-1.5 bg-[#D4AF37] text-[#1B365D] text-sm font-bold rounded hover:bg-[#D4AF37]/90"
+              >
+                Admin Panel
+              </Link>
+            )}
+            
+            <button 
+              onClick={handleLogout}
+              className="p-2 text-gray-400 hover:text-red-400 transition-colors"
+              title="Çıkış Yap"
+            >
+              <LogOut size={20} />
+            </button>
           </div>
-        </Link>
-
-        {/* ANA NAVİGASYON (TEK VÜCUT) */}
-        <nav className="flex flex-wrap justify-center gap-x-5 gap-y-2 text-[9px] font-black uppercase tracking-widest text-white/90">
-          <Link href="/hakkimizda" className="hover:text-[#D4AF37] transition-colors">Platform</Link>
-          <Link href="/haberler" className="hover:text-[#D4AF37] transition-colors">Haberler</Link>
-          <Link href="/etkinlikler" className="hover:text-[#D4AF37] transition-colors">Etkinlikler</Link>
-          <Link href="/kesfet" className="hover:text-[#D4AF37] transition-colors">Keşfet</Link>
-          <Link href="/akilli-eslestirme" className="hover:text-[#D4AF37] transition-colors text-[#D4AF37]">Akıllı Eşleştirme</Link>
-          <Link href="/rehber" className="hover:text-[#D4AF37] transition-colors">Rehber</Link>
-          <Link href="/iletisim" className="hover:text-[#D4AF37] transition-colors">İletişim</Link>
-        </nav>
-
-        {/* ÜYE GİRİŞ & BORSA BUTONLARI */}
-        <div className="flex items-center space-x-3 shrink-0">
-          <Link href="/giris" className="text-[10px] font-bold hover:text-[#D4AF37] px-2">Giriş Yap</Link>
-          <Link href="/giris?tab=register" className="bg-white/10 border border-white/20 text-[10px] font-bold px-3 py-1.5 rounded hover:bg-white/20 transition-all">Üye Ol</Link>
-          <Link href="/panel" className="bg-[#D4AF37] text-[#0A192F] px-4 py-2 rounded-full font-black text-[10px] uppercase shadow-lg hover:scale-105 transition-transform">
-            TİB BORSA GİRİŞ
-          </Link>
-        </div>
+        ) : (
+          <div className="flex items-center gap-2">
+            <Link 
+              href="/giris" 
+              className="px-4 py-2 text-[#D4AF37] hover:text-white transition-colors"
+            >
+              Giriş Yap
+            </Link>
+            <Link 
+              href="/kayit" 
+              className="px-4 py-2 bg-[#D4AF37] text-[#1B365D] rounded font-medium hover:bg-[#D4AF37]/90"
+            >
+              Üye Ol
+            </Link>
+          </div>
+        )}
       </div>
     </header>
   );

@@ -25,42 +25,36 @@ export async function GET() {
   }
 
   try {
-    const users = await prisma.user.findMany({
+    const demands = await prisma.demand.findMany({
       orderBy: { createdAt: 'desc' },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        phone: true,
-        status: true,
-        isAdmin: true,
-        createdAt: true,
-        balance: true
+      include: {
+        creator: {
+          select: { name: true, email: true }
+        }
       }
     });
 
-    return NextResponse.json(users);
+    return NextResponse.json(demands);
   } catch (error) {
-    return NextResponse.json({ error: 'Kullanıcılar çekilemedi' }, { status: 500 });
+    return NextResponse.json({ error: 'İlanlar çekilemedi' }, { status: 500 });
   }
 }
 
-export async function PATCH(request: Request) {
+export async function DELETE(request: Request) {
   const admin = await verifyAdminToken();
   if (!admin) {
     return NextResponse.json({ error: 'Yetkisiz erişim' }, { status: 403 });
   }
 
   try {
-    const { userId, status } = await request.json();
+    const { demandId } = await request.json();
     
-    const updatedUser = await prisma.user.update({
-      where: { id: userId },
-      data: { status }
+    await prisma.demand.delete({
+      where: { id: demandId }
     });
 
-    return NextResponse.json(updatedUser);
+    return NextResponse.json({ success: true });
   } catch (error) {
-    return NextResponse.json({ error: 'Güncelleme hatası' }, { status: 500 });
+    return NextResponse.json({ error: 'Silme hatası' }, { status: 500 });
   }
 }
