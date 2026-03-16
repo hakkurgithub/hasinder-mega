@@ -1,47 +1,34 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-import { sendEmail } from '@/lib/mailer';
+import { cookies } from 'next/headers';
+import { jwtVerify } from 'jose';
+import { prisma } from '@/lib/prisma';
 
-const prisma = new PrismaClient();
-
-export async function GET() {
+async function verifyAdminToken() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get('token')?.value;
+  if (!token) return null;
   try {
-    const pendingUsers = await prisma.user.findMany({
-      where: { status: 'ONAY_BEKLIYOR' },
-      orderBy: { createdAt: 'desc' }
-    });
-    return NextResponse.json(pendingUsers, { status: 200 });
-  } catch (error: any) {
-    return NextResponse.json({ error: 'Kullanıcılar çekilemedi.' }, { status: 500 });
-  }
+    const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'fallback_secret');
+    const { payload } = await jwtVerify(token, secret);
+    return payload.isAdmin ? payload : null;
+  } catch { return null; }
 }
 
-export async function PUT(request: Request) {
+export async function GET() {
+  const admin = await verifyAdminToken();
+  if (!admin) return NextResponse.json({ error: 'Yetkisiz' }, { status: 403 });
   try {
-    const { userId, action } = await request.json();
-    if (!userId || !action) return NextResponse.json({ error: 'Eksik veri.' }, { status: 400 });
+    const users = await prisma.user.findMany({ orderBy: { createdAt: 'desc' } });
+    return NextResponse.json(users);
+  } catch { return NextResponse.json({ error: 'Kullanici hatasi' }, { status: 500 }); }
+}
 
-    const newStatus = action === 'APPROVE' ? 'AKTIF' : 'ENGELLI';
-    
-    const updatedUser = await prisma.user.update({
-      where: { id: userId },
-      data: { status: newStatus }
-    });
-
-    // Firmaya Onay/Ret Maili At
-    const subject = action === 'APPROVE' ? 'TİB Ağı Üyeliğiniz Onaylandı' : 'TİB Ağı Üyelik Başvurunuz Reddedildi';
-    const message = action === 'APPROVE' 
-      ? 'Tebrikler, kurumsal siciliniz onaylanmıştır. Sisteme giriş yapıp ticarete ve komisyon kazanmaya başlayabilirsiniz.'
-      : 'Üyelik başvurunuz platform standartlarını karşılamadığı için reddedilmiştir.';
-    
-    await sendEmail(
-      updatedUser.email,
-      subject,
-      `<h2>Yönetim Kurulu Kararı</h2><p>${message}</p>`
-    );
-
-    return NextResponse.json({ success: true, user: updatedUser }, { status: 200 });
-  } catch (error: any) {
-    return NextResponse.json({ error: 'İşlem başarısız.' }, { status: 500 });
-  }
+export async function PATCH(request: Request) {
+  const admin = await verifyAdminToken();
+  if (!admin) return NextResponse.json({ error: 'Yetkisiz' }, { status: 403 });
+  try {
+    const { userId, status } = await request.json();
+    const updated = await prisma.user.update({ where: { id: userId }, data: { status } });
+    return NextResponse.json(updated);
+  } catch { return NextResponse.json({ error: 'Guncelleme hatasi' }, { status: 500 }); }
 }

@@ -8,57 +8,51 @@ datasource db {
 }
 
 model User {
-  id                    String      @id @default(uuid())
-  name                  String
-  taxNo                 String?     @unique
-  role                  String?     @default("USER")
-  phone                 String?
-  iban                  String?
-  email                 String      @unique
-  password              String
-  balance               Float       @default(0)
-  isAdmin               Boolean     @default(false)
-  status                String      @default("AKTIF")
-  createdAt             DateTime    @default(now())
-  MediationsAsMediator  Mediation[] @relation("MediatorRelation")
-  MediationsAsSeller    Mediation[] @relation("SellerRelation")
-  Demands               Demand[]    @relation("UserDemands")
+  id       String  @id @default(uuid())
+  name     String
+  taxNo    String? @unique
+  role     String? @default("USER")
+  phone    String?
+  iban     String?
+  email    String  @unique
+  password String
+  balance  Float   @default(0)
+  isAdmin  Boolean @default(false)
+  status   String  @default("BEKLEMEDE")
+  createdAt DateTime @default(now())
 }
 
 model Demand {
-  id          String      @id @default(uuid())
+  id          String   @id @default(uuid())
   title       String
-  amount      Float       @default(0)
-  status      String      @default("BEKLEMEDE")
+  amount      Float    @default(0)
+  status      String   @default("BEKLEMEDE")
+  description String?
+  images      String[]
   creatorId   String
-  createdAt   DateTime    @default(now())
-  creator     User        @relation("UserDemands", fields: [creatorId], references: [id])
-  Mediations  Mediation[]
+  createdAt   DateTime @default(now())
 }
 
 model Mediation {
-  id               String   @id @default(uuid())
-  status           String   @default("BEKLEMEDE")
-  amount           Float    @default(0)
-  commissionAmount Float    @default(0)
-  mediatorId       String
-  demandId         String
-  sellerId         String
-  createdAt        DateTime @default(now())
-  mediator         User     @relation("MediatorRelation", fields: [mediatorId], references: [id])
-  seller           User     @relation("SellerRelation", fields: [sellerId], references: [id])
-  demand           Demand   @relation(fields: [demandId], references: [id])
+  id              String   @id @default(uuid())
+  status          String   @default("BEKLEMEDE")
+  amount          Float    @default(0)
+  commissionAmount Float   @default(0)
+  mediatorId      String
+  demandId        String
+  sellerId        String
+  createdAt       DateTime @default(now())
 }
 
 model LogisticsRoute {
-  id          String   @id @default(uuid())
-  origin      String
-  destination String
-  vehicleType String
-  capacity    String
-  targetPrice Float?
-  status      String   @default("AKTIF")
-  createdAt   DateTime @default(now())
+  id           String   @id @default(uuid())
+  origin       String
+  destination  String
+  vehicleType  String
+  capacity     String
+  targetPrice  Float?
+  status       String   @default("AKTIF")
+  createdAt    DateTime @default(now())
 }
 
 model Haber {

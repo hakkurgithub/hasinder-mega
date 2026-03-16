@@ -11,7 +11,6 @@ export async function GET() {
     const demands = await prisma.demand.findMany({
       take: 5,
       orderBy: { createdAt: 'desc' },
-      include: { creator: true }
     });
 
     return NextResponse.json(demands);
@@ -52,7 +51,6 @@ export async function POST(request: Request) {
         creatorId: userId,
         status: 'BEKLEMEDE'
       },
-      include: { creator: true }
     });
 
     return NextResponse.json(demand, { status: 201 });
