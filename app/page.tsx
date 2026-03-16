@@ -78,4 +78,3 @@ export default function Home() {
     </main>
   );
 }
-// Build timestamp: 15 Mar 2026 Paz 12:18:16
